@@ -14,78 +14,69 @@ import 'package:admin_dashboard/ui/buttons/custom_outlined_button.dart';
 import 'package:admin_dashboard/ui/buttons/link_text.dart';
 
 class RessetEmailView extends StatelessWidget {
-  
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: ( _ ) => RegisterFormProvider(),
+      create: (_) => RegisterFormProvider(),
       child: Builder(builder: (context) {
-
-        final registerFormProvider = Provider.of<RegisterFormProvider>(context, listen: false);
+        final registerFormProvider =
+            Provider.of<RegisterFormProvider>(context, listen: false);
 
         return Container(
-          margin: EdgeInsets.only(top: 0),
-          padding: EdgeInsets.symmetric( horizontal: 20 ),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: BoxConstraints( maxWidth: 370 ),
-              child: Form(
-                autovalidateMode: AutovalidateMode.always,
-                key: registerFormProvider.formKey,
-                child: Column(
-                  children: [
+            margin: EdgeInsets.only(top: 0),
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 370),
+                child: Form(
+                    autovalidateMode: AutovalidateMode.always,
+                    key: registerFormProvider.formKey,
+                    child: Column(
+                      children: [
+                        // Email
 
-                    // Email
-                   
-                    
-                    // Email
-                    TextFormField(
-                      onChanged: ( value ) => registerFormProvider.email = value,
-                      validator: ( value ) {
-                        if( !EmailValidator.validate(value ?? '') ) return 'Email no valido';
-                        return null;
-                      },
-                      style: TextStyle( color: Colors.black ),
-                      decoration: CustomInputs.loginInputDecoration(
-                        hint: 'Ingrese su correo',
-                        label: 'Email',
-                        icon: Icons.email
-                      ),
-                    ),
+                        // Email
+                        TextFormField(
+                          onChanged: (value) =>
+                              registerFormProvider.email = value,
+                          validator: (value) {
+                            if (!EmailValidator.validate(value ?? ''))
+                              return 'Email no valido';
+                            return null;
+                          },
+                          style: TextStyle(color: Colors.black),
+                          decoration: CustomInputs.loginInputDecoration(
+                              hint: 'Ingrese su correo',
+                              label: 'Email',
+                              icon: Icons.email),
+                        ),
 
-                    SizedBox( height: 5 ),
+                        SizedBox(height: 5),
 
-             
-                    
-               
-                    CustomOutlinedButton(
-  onPressed: () {
+                        CustomOutlinedButton(
+                          onPressed: () {
+                            final authProvider = Provider.of<AuthProvider>(
+                                context,
+                                listen: false);
+                            authProvider
+                                .ressetPassword(registerFormProvider.email);
+                          },
+                          text: 'Recuperar cuenta',
+                        ),
 
-
-   
-
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-       authProvider.ressetPassword(registerFormProvider.email);
-
-  }, 
-  text: 'Recuperar cuenta',
-),
-
-SizedBox( height: 5 ),
-LinkText(
-  text: 'Ir al login',
-  onPressed: () {
-    Navigator.pushReplacementNamed(context, Flurorouter.loginRoute );
-  },
-)
-
-],
-)
-),
-),
-));
-}),
-);
-
-}
+                        SizedBox(height: 5),
+                        LinkText(
+                          text: 'Ir al login',
+                          onPressed: () {
+                            Navigator.pushReplacementNamed(
+                                context, Flurorouter.loginRoute);
+                          },
+                        )
+                      ],
+                    )),
+              ),
+            ));
+      }),
+    );
+  }
 }

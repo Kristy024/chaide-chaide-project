@@ -52,7 +52,7 @@ class _LotesViewState extends State<LotesView> {
               label: 'Buscar por código', 
               icon: Icons.numbers
             ),
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.black),
             maxLength: 10, // Set maximum input length to 7 characters
           ),
 

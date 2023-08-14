@@ -915,6 +915,7 @@ class _SendEmailViewState extends State<SendEmailView> {
       TipoColchonData('Otros', contadorOtros),
       TipoColchonData('Presencia Hilo Suelto', contadorPresenciaHiloSuelto),
     ];
+
     final series = [
       charts.Series<TipoColchonData, String>(
         id: 'Cantidad',
@@ -923,6 +924,7 @@ class _SendEmailViewState extends State<SendEmailView> {
         data: data,
       ),
     ];
+
     final barChart = charts.BarChart(
       series,
       animate: true,
@@ -936,6 +938,7 @@ class _SendEmailViewState extends State<SendEmailView> {
         renderSpec: charts.NoneRenderSpec(),
       ),
     );
+
     for (var colchon in colchones) {
       String codigoLote = colchon.lote.codigo;
 
@@ -954,13 +957,16 @@ class _SendEmailViewState extends State<SendEmailView> {
         porcentajeFallasPorLote[codigoLote] = colchon.intTotal.toDouble();
       }
     }
+
     List<String> tipoFiltro = [
       "Modelo",
       "Fecha",
       "Código",
     ];
+
     final modelosName = Provider.of<ColchonesProvider>(context).modelos;
-// Genera la lista de datos para el gráfico
+
+    // Genera la lista de datos para el gráfico
     List<charts.Series<ChartData, String>> seriesList = [];
 
     for (var entry in porcentajeFallasPorLote.entries) {
@@ -970,11 +976,11 @@ class _SendEmailViewState extends State<SendEmailView> {
       seriesList.add(
         charts.Series<ChartData, String>(
           id: codigoLote,
-          domainFn: (ChartData data, _) => "${data.loteCodigo}\n${data.porcentajeFallas.toStringAsFixed(2)}%",
+          domainFn: (ChartData data, _) =>
+              "${data.loteCodigo}\n${data.porcentajeFallas.toStringAsFixed(2)}%",
           measureFn: (ChartData data, _) => data.porcentajeFallas,
           data: [ChartData(codigoLote, porcentajeFallas)],
-          labelAccessorFn: (ChartData data, _) =>
-              '',
+          labelAccessorFn: (ChartData data, _) => '',
         ),
       );
     }
@@ -1002,6 +1008,8 @@ class _SendEmailViewState extends State<SendEmailView> {
       child: ListView(
         physics: ClampingScrollPhysics(),
         children: [
+          SizedBox(height: 20),
+          //CABECERA Y FILTROS
           DropdownButtonFormField<String>(
             value: null,
             dropdownColor: Colors.white,
@@ -1136,18 +1144,26 @@ class _SendEmailViewState extends State<SendEmailView> {
                 SizedBox(
                   width: 20,
                 ),
+                Text(
+                  "Desde: ",
+                  style: TextStyle(color: Colors.black),
+                ),
                 CustomOutlinedButton(
                   text: _fechaController.text == ""
-                      ? "fecha desde"
+                      ? "Seleccione"
                       : _fechaController.text,
                   onPressed: () => _selectDate(context),
                 ),
                 SizedBox(
                   width: 20,
                 ),
+                Text(
+                  "Hasta: ",
+                  style: TextStyle(color: Colors.black),
+                ),
                 CustomOutlinedButton(
                   text: _fechaController2.text == ""
-                      ? "fecha hasta"
+                      ? "Seleccione"
                       : _fechaController2.text,
                   onPressed: () => _selectDate2(context),
                 ),
@@ -1173,7 +1189,7 @@ class _SendEmailViewState extends State<SendEmailView> {
 
           if (selectedFiltro != "Modelo")
             WhiteCard(
-              backgroundColor: Colors.blueGrey.shade100,
+              backgroundColor: Colors.white,
               title: 'Porcentaje de Fallas por Lote',
               child: Container(
                 height: 300,
@@ -1183,30 +1199,29 @@ class _SendEmailViewState extends State<SendEmailView> {
                   vertical: true,
                   defaultInteractions: true,
                   barRendererDecorator: charts.BarLabelDecorator<String>(
-                    
                     labelPosition: charts.BarLabelPosition.outside,
-                  labelAnchor: charts.BarLabelAnchor.end,
-                  insideLabelStyleSpec: charts.TextStyleSpec(
-                    color: charts.Color.black,
-                  ),
+                    labelAnchor: charts.BarLabelAnchor.end,
+                    insideLabelStyleSpec: charts.TextStyleSpec(
+                      color: charts.Color.black,
+                    ),
                   ),
                 ),
               ),
             ),
-            Card(
+          Card(
             child: Container(
-              color: Colors.green.shade100,
+              color: Colors.white,
               height: 400, // Ajusta la altura según tus necesidades
               padding: EdgeInsets.all(20),
               child: barChart,
             ),
           ),
-          
+
           Wrap(
             children: [
               WhiteCard(
-                backgroundColor: Colors.amber,
-               // width: 800,
+                backgroundColor: Colors.white,
+                // width: 800,
                 title: "Cantidad de Lotes \nRegistrados: $cantidadLotes ",
                 child: Row(
                   children: [
@@ -1228,136 +1243,144 @@ class _SendEmailViewState extends State<SendEmailView> {
                             }).toList(),
                           ),
                         )),
-                          Padding(
-            padding: const EdgeInsets.only(right: 50, left: 50),
-            child: WhiteCard(
-              width: 300,
-              title: 'Colchones',
-              child: DataTable(
-                columnSpacing: 100,
-                columns: [
-                  DataColumn(label: Text('Etiqueta de fila')),
-                  DataColumn(label: Text('Cuenta')),
-                ],
-                rows: [
-                  DataRow(
-                    cells: [
-                      DataCell(Text('Borde Tapa Ondulado')),
-                      DataCell(Text(contadorBordeTapaOndulado.toString())),
-                    ],
-                  ),
-                  DataRow(
-                    cells: [
-                      DataCell(Text('Esquina Col Sobresalida')),
-                      DataCell(Text(contadorEsquinaColSobreSalida.toString())),
-                    ],
-                  ),
-                  DataRow(
-                    cells: [
-                      DataCell(Text('Esquina Tapa Malformada')),
-                      DataCell(Text(contadorEsquinaTapaMalformada.toString())),
-                    ],
-                  ),
-                  DataRow(
-                    cells: [
-                      DataCell(Text('Hilo Suelto Reata')),
-                      DataCell(Text(contadorHiloSueltoReata.toString())),
-                    ],
-                  ),
-                  DataRow(
-                    cells: [
-                      DataCell(Text('Hilo Suelto Remate')),
-                      DataCell(Text(contadorHiloSueltoRemate.toString())),
-                    ],
-                  ),
-                  DataRow(
-                    cells: [
-                      DataCell(Text('Hilo Suelto Alcochado')),
-                      DataCell(Text(contadorHiloSueltoAlcochado.toString())),
-                    ],
-                  ),
-                  DataRow(
-                    cells: [
-                      DataCell(Text('Hilo Suelto Interior')),
-                      DataCell(Text(contadorHiloSueltoInterior.toString())),
-                    ],
-                  ),
-                  DataRow(
-                    cells: [
-                      DataCell(Text('Punta Saltada Reata')),
-                      DataCell(Text(contadorPuntaSaltadaReata.toString())),
-                    ],
-                  ),
-                  DataRow(
-                    cells: [
-                      DataCell(Text('Reata Rasgada Enganchada')),
-                      DataCell(Text(contadorReataRasgadaEnganchada.toString())),
-                    ],
-                  ),
-                  DataRow(
-                    cells: [
-                      DataCell(Text('Tipo Remate Inadecuado')),
-                      DataCell(Text(contadorTipoRemateInadecuado.toString())),
-                    ],
-                  ),
-                  DataRow(
-                    cells: [
-                      DataCell(Text('Tela Espuma Salida Reata')),
-                      DataCell(Text(contadorTelaEspumaSalidaReata.toString())),
-                    ],
-                  ),
-                  DataRow(
-                    cells: [
-                      DataCell(Text('Tapa Descuadrada')),
-                      DataCell(Text(contadorTapaDescuadrada.toString())),
-                    ],
-                  ),
-                  DataRow(
-                    cells: [
-                      DataCell(Text('Tela Rasgada')),
-                      DataCell(Text(contadorTelaRasgada.toString())),
-                    ],
-                  ),
-                  DataRow(
-                    cells: [
-                      DataCell(Text('Ninguno')),
-                      DataCell(Text(contadorNinguno.toString())),
-                    ],
-                  ),
-                  DataRow(
-                    cells: [
-                      DataCell(Text('Otros')),
-                      DataCell(Text(contadorOtros.toString())),
-                    ],
-                  ),
-                  DataRow(
-                    cells: [
-                      DataCell(Text('Presencia Hilo Suelto')),
-                      DataCell(Text(contadorPresenciaHiloSuelto.toString())),
-                    ],
-                  ),
-                  DataRow(
-                    cells: [
-                      DataCell(Text('Total General')),
-                      DataCell(Text(totalGeneral.toString())),
-                    ],
-                  ),
-                  // Agregar las demás etiquetas de fila aquí...
-                  
-                ],
-              ),
-              
-            ),
-            
-          ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 50, left: 50),
+                      child: WhiteCard(
+                        width: 300,
+                        title: 'Colchones',
+                        child: DataTable(
+                          columnSpacing: 100,
+                          columns: [
+                            DataColumn(label: Text('Etiqueta de fila')),
+                            DataColumn(label: Text('Cuenta')),
+                          ],
+                          rows: [
+                            DataRow(
+                              cells: [
+                                DataCell(Text('Borde Tapa Ondulado')),
+                                DataCell(
+                                    Text(contadorBordeTapaOndulado.toString())),
+                              ],
+                            ),
+                            DataRow(
+                              cells: [
+                                DataCell(Text('Esquina Col Sobresalida')),
+                                DataCell(Text(
+                                    contadorEsquinaColSobreSalida.toString())),
+                              ],
+                            ),
+                            DataRow(
+                              cells: [
+                                DataCell(Text('Esquina Tapa Malformada')),
+                                DataCell(Text(
+                                    contadorEsquinaTapaMalformada.toString())),
+                              ],
+                            ),
+                            DataRow(
+                              cells: [
+                                DataCell(Text('Hilo Suelto Reata')),
+                                DataCell(
+                                    Text(contadorHiloSueltoReata.toString())),
+                              ],
+                            ),
+                            DataRow(
+                              cells: [
+                                DataCell(Text('Hilo Suelto Remate')),
+                                DataCell(
+                                    Text(contadorHiloSueltoRemate.toString())),
+                              ],
+                            ),
+                            DataRow(
+                              cells: [
+                                DataCell(Text('Hilo Suelto Alcochado')),
+                                DataCell(Text(
+                                    contadorHiloSueltoAlcochado.toString())),
+                              ],
+                            ),
+                            DataRow(
+                              cells: [
+                                DataCell(Text('Hilo Suelto Interior')),
+                                DataCell(Text(
+                                    contadorHiloSueltoInterior.toString())),
+                              ],
+                            ),
+                            DataRow(
+                              cells: [
+                                DataCell(Text('Punta Saltada Reata')),
+                                DataCell(
+                                    Text(contadorPuntaSaltadaReata.toString())),
+                              ],
+                            ),
+                            DataRow(
+                              cells: [
+                                DataCell(Text('Reata Rasgada Enganchada')),
+                                DataCell(Text(
+                                    contadorReataRasgadaEnganchada.toString())),
+                              ],
+                            ),
+                            DataRow(
+                              cells: [
+                                DataCell(Text('Tipo Remate Inadecuado')),
+                                DataCell(Text(
+                                    contadorTipoRemateInadecuado.toString())),
+                              ],
+                            ),
+                            DataRow(
+                              cells: [
+                                DataCell(Text('Tela Espuma Salida Reata')),
+                                DataCell(Text(
+                                    contadorTelaEspumaSalidaReata.toString())),
+                              ],
+                            ),
+                            DataRow(
+                              cells: [
+                                DataCell(Text('Tapa Descuadrada')),
+                                DataCell(
+                                    Text(contadorTapaDescuadrada.toString())),
+                              ],
+                            ),
+                            DataRow(
+                              cells: [
+                                DataCell(Text('Tela Rasgada')),
+                                DataCell(Text(contadorTelaRasgada.toString())),
+                              ],
+                            ),
+                            DataRow(
+                              cells: [
+                                DataCell(Text('Ninguno')),
+                                DataCell(Text(contadorNinguno.toString())),
+                              ],
+                            ),
+                            DataRow(
+                              cells: [
+                                DataCell(Text('Otros')),
+                                DataCell(Text(contadorOtros.toString())),
+                              ],
+                            ),
+                            DataRow(
+                              cells: [
+                                DataCell(Text('Presencia Hilo Suelto')),
+                                DataCell(Text(
+                                    contadorPresenciaHiloSuelto.toString())),
+                              ],
+                            ),
+                            DataRow(
+                              cells: [
+                                DataCell(Text('Total General')),
+                                DataCell(Text(totalGeneral.toString())),
+                              ],
+                            ),
+                            // Agregar las demás etiquetas de fila aquí...
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
             ],
           ),
-        
 
-        
           //termina lote
         ],
       ),

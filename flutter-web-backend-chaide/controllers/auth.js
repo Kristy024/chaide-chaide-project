@@ -36,6 +36,7 @@ const resetPassword = async (req, res = response) => {
         },
       });
   
+      //PRIEMRO EJECUTAR EL FRONT PARA SABER EL PUERTO DE SALIDA.
       //CAMBIAR PUERTO PARA PRUEBAS FUNCIONALES
       const mailOptions = {
         from: 'rresset25@gmail.com',
@@ -44,7 +45,7 @@ const resetPassword = async (req, res = response) => {
         html: `
           <p>Has solicitado restablecer tu contraseña.</p>
           <p>Por favor, haz clic en el siguiente enlace para continuar:</p>
-          <a href="http://localhost:58622/#/auth/ressetPasswordP/?token=${token}">Restablecer Contraseña</a>
+          <a href="http://localhost:50347/#/auth/ressetPasswordP/?token=${token}">Restablecer Contraseña</a>
         `,
       };
   
