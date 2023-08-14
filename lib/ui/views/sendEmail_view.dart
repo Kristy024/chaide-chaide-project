@@ -931,7 +931,8 @@ class _SendEmailViewState extends State<SendEmailView> {
       vertical: true,
       defaultRenderer: charts.BarRendererConfig(
         barRendererDecorator: charts.BarLabelDecorator<String>(
-          labelPosition: charts.BarLabelPosition.inside,
+          labelPosition: charts.BarLabelPosition.auto,
+          labelPadding: 10,
         ),
       ),
       domainAxis: charts.OrdinalAxisSpec(
@@ -1199,6 +1200,7 @@ class _SendEmailViewState extends State<SendEmailView> {
                   vertical: true,
                   defaultInteractions: true,
                   barRendererDecorator: charts.BarLabelDecorator<String>(
+                    labelPadding: 5,
                     labelPosition: charts.BarLabelPosition.outside,
                     labelAnchor: charts.BarLabelAnchor.end,
                     insideLabelStyleSpec: charts.TextStyleSpec(
@@ -1212,7 +1214,12 @@ class _SendEmailViewState extends State<SendEmailView> {
             child: Container(
               color: Colors.white,
               height: 400, // Ajusta la altura según tus necesidades
-              padding: EdgeInsets.all(20),
+              padding: EdgeInsets.only(
+                top: 50,
+                left: 5,
+                right: 5,
+                bottom: 5
+              ),
               child: barChart,
             ),
           ),
