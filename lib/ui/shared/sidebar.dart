@@ -25,54 +25,60 @@ class Sidebar extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final sideMenuProvider = Provider.of<SideMenuProvider>(context);
-      final user = Provider.of<AuthProvider>(context).user!;
-    return Container(
-      width: 200,
-      height: double.infinity,
-      decoration: buildBoxDecoration(),
+    final user = Provider.of<AuthProvider>(context).user!;
+
+      return Container(
+        width: 200,
+        height: double.infinity,
+      // decoration: buildBoxDecoration(),
+
+      decoration: BoxDecoration(
+        color: Color.fromRGBO(0, 83, 157, 1)
+      ),
+      
       child: ListView(
         physics: ClampingScrollPhysics(),
         children: [
-
-        
 
           SizedBox( height: 50 ),
             if(user.rol=="ADMIN_ROLE")
           TextSeparator( text: 'Seguridad' ),
             if(user.rol=="ADMIN_ROLE")
-           MenuItem( 
+          MenuItem( 
             text: 'Usuarios', 
             icon: Icons.people_alt_outlined, 
             onPressed: () => navigateTo( Flurorouter.usersRoute ),
             isActive: sideMenuProvider.currentPage == Flurorouter.usersRoute,
           ),
         
-                if(user.rol=="SUPERVISOR_ROLE"|| user.rol == "OPERADOR_ROLE")
-           TextSeparator( text: 'Bodega' ),
-               if(user.rol == "OPERADOR_ROLE")
-             MenuItem(
-            text: 'Ingreso de lotes', 
-            icon: Icons.content_paste_go_sharp, 
-            onPressed: () => navigateTo( Flurorouter.categoriesRoute ),
-            isActive: sideMenuProvider.currentPage == Flurorouter.categoriesRoute,
-          ),
-            if(user.rol=="SUPERVISOR_ROLE"|| user.rol == "OPERADOR_ROLE")
-           MenuItem(
-            text: 'Fallos de lotes',
-            icon: Icons.bed,
-            onPressed: () => navigateTo( Flurorouter.blankRoute ),
-            isActive: sideMenuProvider.currentPage == Flurorouter.blankRoute,
-          ),
-               if (user.rol == "ADMIN_ROLE" || user.rol == "SUPERVISOR_ROLE" || user.rol == "OPERADOR_ROLE")
-           TextSeparator( text: 'Control de fallos' ),
+          if(user.rol=="SUPERVISOR_ROLE"|| user.rol == "OPERADOR_ROLE")
+            TextSeparator( text: 'BODEGA' ),
 
-         if (user.rol == "ADMIN_ROLE" || user.rol == "SUPERVISOR_ROLE" || user.rol == "OPERADOR_ROLE")
-          MenuItem(
-            text: 'Reportes',
-            icon: Icons.format_align_left_sharp,
-             onPressed: () => navigateTo( Flurorouter.generarPDFRoute ),
-            isActive: sideMenuProvider.currentPage == Flurorouter.generarPDFRoute,
-          ),
+          if(user.rol == "OPERADOR_ROLE")
+            MenuItem(
+              text: 'Ingreso de lotes', 
+              icon: Icons.content_paste_go_sharp, 
+              onPressed: () => navigateTo( Flurorouter.categoriesRoute ),
+              isActive: sideMenuProvider.currentPage == Flurorouter.categoriesRoute,
+            ),
+          if(user.rol=="SUPERVISOR_ROLE"|| user.rol == "OPERADOR_ROLE")
+            MenuItem(
+              text: 'Fallos de lotes',
+              icon: Icons.bed,
+              onPressed: () => navigateTo( Flurorouter.blankRoute ),
+              isActive: sideMenuProvider.currentPage == Flurorouter.blankRoute,
+            ),
+               
+          if (user.rol == "ADMIN_ROLE" || user.rol == "SUPERVISOR_ROLE" || user.rol == "OPERADOR_ROLE")
+            TextSeparator( text: 'CONTROL DE FALLOS' ),
+
+          if (user.rol == "ADMIN_ROLE" || user.rol == "SUPERVISOR_ROLE" || user.rol == "OPERADOR_ROLE")
+            MenuItem(
+              text: 'Reportes',
+              icon: Icons.format_align_left_sharp,
+              onPressed: () => navigateTo( Flurorouter.generarPDFRoute ),
+              isActive: sideMenuProvider.currentPage == Flurorouter.generarPDFRoute,
+            ),
 
  
           

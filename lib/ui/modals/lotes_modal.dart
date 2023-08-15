@@ -58,8 +58,8 @@ class _LoteModalState extends State<LoteModal> {
     
     return Container(
       padding: EdgeInsets.all(20),
-      height: 500,
-      width: 300, // expanded
+      height: 700,
+      width: 400, // expanded
       decoration: buildBoxDecoration(),
       child: Column(
         children: [
@@ -67,9 +67,9 @@ class _LoteModalState extends State<LoteModal> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text( widget.lotes?.nombre ?? 'Nuevo Lote', style: CustomLabels.h1.copyWith( color: Colors.white )),
+              Text( widget.lotes?.nombre ?? 'Nuevo Lote', style: CustomLabels.h1.copyWith( color: Color.fromRGBO(0, 83, 157, 1) )),
               IconButton(
-                icon: Icon( Icons.close, color: Colors.white, ), 
+                icon: Icon( Icons.close, color: Color.fromRGBO(0, 83, 157, 1), ), 
                 onPressed: () => Navigator.of(context).pop()
               )
             ],
@@ -84,12 +84,15 @@ class _LoteModalState extends State<LoteModal> {
             onChanged: ( value ) => nombre = value,
             decoration: CustomInputs.loginInputDecoration(
               hint: 'Nombre', 
-              label: 'Nombre', 
+              // label: 'Nombre', 
               icon: Icons.new_releases_outlined
             ),
-            style: TextStyle( color: Colors.white ),
+            style: TextStyle( color: Colors.black ),
           ),
-           TextFormField(
+
+          SizedBox(height: 20 ),
+          
+          TextFormField(
             initialValue: widget.lotes?.codigo ?? '',
             onChanged: ( value ) => codigo = value,
              inputFormatters: [
@@ -101,8 +104,10 @@ class _LoteModalState extends State<LoteModal> {
               icon: Icons.copy_rounded
             ),
              maxLength: 10,
-            style: TextStyle( color: Colors.white ),
+            style: TextStyle( color: Colors.black ),
           ),
+          
+          SizedBox(height: 20 ),
           
            TextFormField(
             initialValue: widget.lotes?.modelo ?? '',
@@ -112,36 +117,38 @@ class _LoteModalState extends State<LoteModal> {
               label: 'Modelo', 
               icon: Icons.bed
             ),
-            style: TextStyle( color: Colors.white ),
+            style: TextStyle( color: Colors.black ),
           ),
 
- TextFormField(
-  initialValue: widget.lotes?.stock.toString() ?? '',
-  onChanged: (value) => stock = int.tryParse(value) ?? 0,
-  keyboardType: TextInputType.number,
-  inputFormatters: [
-    FilteringTextInputFormatter.allow(RegExp(r'\d+')),
-  ],
-  decoration: CustomInputs.loginInputDecoration(
-    hint: 'Stock', 
-    label: 'Stock', 
-    icon: Icons.numbers
-  ),
-  style: TextStyle(color: Colors.white),
-  maxLength: 7, // Set maximum input length to 7 characters
-),
+          SizedBox(height: 20 ),
+
+          TextFormField(
+            initialValue: widget.lotes?.stock.toString() ?? '',
+            onChanged: (value) => stock = int.tryParse(value) ?? 0,
+            keyboardType: TextInputType.number,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'\d+')),
+            ],
+            decoration: CustomInputs.loginInputDecoration(
+              hint: 'Stock', 
+              label: 'Stock', 
+              icon: Icons.numbers
+            ),
+            style: TextStyle(color: Colors.black),
+            maxLength: 7, // Set maximum input length to 7 characters
+          ),
 
 
           if (widget.lotes != null)
-          CheckboxListTile(
-          title: Text('Revisado'),
-          value: _isChecked,
-          onChanged: (bool? value) {
-            setState(() {
-              _isChecked = value ?? false;
-            });
-          },
-        ),
+            CheckboxListTile(
+              title: Text('Revisado'),
+              value: _isChecked,
+              onChanged: (bool? value) {
+                setState(() {
+                  _isChecked = value ?? false;
+                });
+              },
+            ),
           
           Container(
             margin: EdgeInsets.only(top: 30),
@@ -176,7 +183,7 @@ class _LoteModalState extends State<LoteModal> {
 
               },
               text: 'Guardar',
-              color: Colors.white,
+              color: Colors.black,
             ),
           )
 
@@ -187,7 +194,8 @@ class _LoteModalState extends State<LoteModal> {
 
   BoxDecoration buildBoxDecoration() => BoxDecoration(
     borderRadius: BorderRadius.only( topLeft:  Radius.circular(20), topRight: Radius.circular(20) ),
-    color: Color(0xff0F2041),
+    // color: Color(0xff0F2041),
+    color: Colors.white,
     boxShadow: [
       BoxShadow(
         color: Colors.black26

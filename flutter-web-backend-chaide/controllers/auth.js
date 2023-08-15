@@ -45,7 +45,7 @@ const resetPassword = async (req, res = response) => {
         html: `
           <p>Has solicitado restablecer tu contraseña.</p>
           <p>Por favor, haz clic en el siguiente enlace para continuar:</p>
-          <a href="http://localhost:50347/#/auth/ressetPasswordP/?token=${token}">Restablecer Contraseña</a>
+          <a href="http://localhost:51841/#/auth/ressetPasswordP/?token=${token}">Restablecer Contraseña</a>
         `,
       };
   

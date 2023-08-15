@@ -6,7 +6,7 @@ import 'package:admin_dashboard/ui/cards/white_card.dart';
 
 import '../../providers/categories_provider.dart';
 import '../../providers/colchones_provider.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
+// import 'package:charts_flutter/flutter.dart' as charts;
 
 // Define the ChartData class
 class ChartData {
@@ -46,7 +46,7 @@ class _DashboardViewState extends State<DashboardView> {
     Map<String, int> totalColchonesPorLote = {};
     Map<String, double> porcentajeFallasPorLote = {};
     // Genera la lista de datos para el gráfico
-    List<charts.Series<ChartData, String>> seriesList = [];
+    // List<charts.Series<ChartData, String>> seriesList = [];
     int contadorBordeTapaOndulado = 0;
     int contadorEsquinaColSobreSalida = 0;
     int contadorEsquinaTapaMalformada = 0;
@@ -119,28 +119,28 @@ class _DashboardViewState extends State<DashboardView> {
       TipoColchonData('Otros', contadorOtros),
       TipoColchonData('Presencia Hilo Suelto', contadorPresenciaHiloSuelto),
     ];
-    final series = [
-      charts.Series<TipoColchonData, String>(
-        id: 'Cantidad',
-        domainFn: (TipoColchonData data, _) => data.tipo,
-        measureFn: (TipoColchonData data, _) => data.cantidad,
-        data: data,
-      ),
-    ];
-   final barChart = charts.BarChart(
-      series,
-      animate: true,
-      vertical: true,
-      defaultRenderer: charts.BarRendererConfig(
-        barRendererDecorator: charts.BarLabelDecorator<String>(
-          labelPosition: charts.BarLabelPosition.inside,
+  //   final series = [
+  //     charts.Series<TipoColchonData, String>(
+  //       id: 'Cantidad',
+  //       domainFn: (TipoColchonData data, _) => data.tipo,
+  //       measureFn: (TipoColchonData data, _) => data.cantidad,
+  //       data: data,
+  //     ),
+  //   ];
+  //  final barChart = charts.BarChart(
+  //     series,
+  //     animate: true,
+  //     vertical: true,
+  //     defaultRenderer: charts.BarRendererConfig(
+  //       barRendererDecorator: charts.BarLabelDecorator<String>(
+  //         labelPosition: charts.BarLabelPosition.inside,
 
-        ),
-      ),
-      domainAxis: charts.OrdinalAxisSpec(
-        renderSpec: charts.NoneRenderSpec(),
-      ),
-    );
+  //       ),
+  //     ),
+  //     domainAxis: charts.OrdinalAxisSpec(
+  //       renderSpec: charts.NoneRenderSpec(),
+  //     ),
+  //   );
     for (var colchon in colchones) {
       String codigoLote = colchon.lote.codigo;
 
@@ -166,16 +166,16 @@ class _DashboardViewState extends State<DashboardView> {
       String codigoLote = entry.key;
       double porcentajeFallas = entry.value;
 
-      seriesList.add(
-        charts.Series<ChartData, String>(
-          id: codigoLote,
-          domainFn: (ChartData data, _) => data.loteCodigo,
-          measureFn: (ChartData data, _) => data.porcentajeFallas,
-          data: [ChartData(codigoLote, porcentajeFallas)],
-          labelAccessorFn: (ChartData data, _) =>
-              '${data.loteCodigo}: ${data.porcentajeFallas.toStringAsFixed(2)}%',
-        ),
-      );
+      // seriesList.add(
+      //   charts.Series<ChartData, String>(
+      //     id: codigoLote,
+      //     domainFn: (ChartData data, _) => data.loteCodigo,
+      //     measureFn: (ChartData data, _) => data.porcentajeFallas,
+      //     data: [ChartData(codigoLote, porcentajeFallas)],
+      //     labelAccessorFn: (ChartData data, _) =>
+      //         '${data.loteCodigo}: ${data.porcentajeFallas.toStringAsFixed(2)}%',
+      //   ),
+      // );
     }
     for (var lote in lotes) {
       if (lote.estadoRevision == true) {
@@ -241,12 +241,12 @@ class _DashboardViewState extends State<DashboardView> {
                 title: 'Porcentaje de Fallas por Lote',
                 child: Container(
                   height: 300,
-                  child: charts.BarChart(
-                    seriesList,
-                    animate: true,
-                    vertical: true,
-                    barRendererDecorator: charts.BarLabelDecorator<String>(),
-                  ),
+                  // child: charts.BarChart(
+                  //   seriesList,
+                  //   animate: true,
+                  //   vertical: true,
+                  //   barRendererDecorator: charts.BarLabelDecorator<String>(),
+                  // ),
                 ),
               ),
               
@@ -374,8 +374,8 @@ class _DashboardViewState extends State<DashboardView> {
                Card(
             child: Container(
               height: 400, // Ajusta la altura según tus necesidades
-              padding: EdgeInsets.all(20),
-              child: barChart,
+              // padding: EdgeInsets.all(20),
+              // child: barChart,
             ),
           ),
                //termina lote

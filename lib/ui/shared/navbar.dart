@@ -34,11 +34,11 @@ class Navbar extends StatelessWidget {
             ConstrainedBox(
               constraints: BoxConstraints( maxWidth: 250 ),
               child:  Image.asset(
-            'background.png',
-            width: 120, // Tamaño de la imagen
-            height: 120,
-        // Color de la imagen
-          ),
+                'background.png',
+                width: 220, // Tamaño de la imagen
+                height: 220,
+                // Color de la imagen
+              ),
             ),
 
           Spacer(),
@@ -55,11 +55,11 @@ class Navbar extends StatelessWidget {
 
   BoxDecoration buildBoxDecoration() => BoxDecoration(
     color: Colors.white,
-    boxShadow: [
-      BoxShadow(
-        color: Colors.black12,
-        blurRadius: 5
-      )
-    ]
+    // boxShadow: [
+    //   BoxShadow(
+    //     color: Colors.black12,
+    //     blurRadius: 5
+    //   )
+    // ]
   );
 }

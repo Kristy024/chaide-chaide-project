@@ -1,6 +1,11 @@
+// ignore_for_file: avoid_web_libraries_in_flutter
+
+import 'dart:js_interop';
+
 import 'package:admin_dashboard/models/colchones.dart';
 import 'package:admin_dashboard/models/lotes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
@@ -8,12 +13,14 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 import 'package:admin_dashboard/ui/cards/white_card.dart';
-import 'package:admin_dashboard/models/usuario.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/categories_provider.dart';
 import '../../providers/colchones_provider.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
+//import 'package:charts_flutter/flutter.dart' as charts;
+import 'dart:ui' as ui;
 import 'package:pdf/widgets.dart' as pw;
+
 import 'dart:html' as html;
 
 import 'package:universal_html/html.dart' as html;
@@ -28,6 +35,7 @@ Future<void> generateAndDownloadPdf(
   String comentario,
   String tipoFiltro,
   List<Colchones> colchones,
+  List<Uint8List> charts,
   int totalGeneral,
   int contadorBordeTapaOndulado,
   int contadorEsquinaColSobreSalida,
@@ -108,46 +116,6 @@ Future<void> generateAndDownloadPdf(
       contadorNinguno +
       contadorOtros +
       contadorPresenciaHiloSuelto;
-
-  List<TipoColchonData> data = [
-    TipoColchonData('Borde Tapa Ondulado', contadorBordeTapaOndulado),
-    TipoColchonData('Esquina Col Sobresalida', contadorEsquinaColSobreSalida),
-    TipoColchonData('Esquina Tapa Malformada', contadorEsquinaTapaMalformada),
-    TipoColchonData('Hilo Suelto Reata', contadorHiloSueltoReata),
-    TipoColchonData('Hilo Suelto Remate', contadorHiloSueltoRemate),
-    TipoColchonData('Hilo Suelto Alcochado', contadorHiloSueltoAlcochado),
-    TipoColchonData('Hilo Suelto Interior', contadorHiloSueltoInterior),
-    TipoColchonData('Punta Saltada Reata', contadorPuntaSaltadaReata),
-    TipoColchonData('Reata Rasgada Enganchada', contadorReataRasgadaEnganchada),
-    TipoColchonData('Tipo Remate Inadecuado', contadorTipoRemateInadecuado),
-    TipoColchonData('Tela Espuma Salida Reata', contadorTelaEspumaSalidaReata),
-    TipoColchonData('Tapa Descuadrada', contadorTapaDescuadrada),
-    TipoColchonData('Tela Rasgada', contadorTelaRasgada),
-    TipoColchonData('Ninguno', contadorNinguno),
-    TipoColchonData('Otros', contadorOtros),
-    TipoColchonData('Presencia Hilo Suelto', contadorPresenciaHiloSuelto),
-  ];
-  final series = [
-    charts.Series<TipoColchonData, String>(
-      id: 'Cantidad',
-      domainFn: (TipoColchonData data, _) => data.tipo,
-      measureFn: (TipoColchonData data, _) => data.cantidad,
-      data: data,
-    ),
-  ];
-  final barChart = charts.BarChart(
-    series,
-    animate: true,
-    vertical: true,
-    defaultRenderer: charts.BarRendererConfig(
-      barRendererDecorator: charts.BarLabelDecorator<String>(
-        labelPosition: charts.BarLabelPosition.inside,
-      ),
-    ),
-    domainAxis: charts.OrdinalAxisSpec(
-      renderSpec: charts.NoneRenderSpec(),
-    ),
-  );
 
   //final ByteData imageLeftData = await rootBundle.load('assets/logo_pdfFruty.jpeg');
   final ByteData imageCenterData = await rootBundle.load('/background.png');
@@ -633,7 +601,12 @@ Future<void> generateAndDownloadPdf(
     ],
   );
 
-  // Convertir el gráfico a una imagen
+  //ADD CHARTS IMAGES TO PDF
+  final List<pw.MemoryImage> images = [];
+
+  for (var c in charts) {
+    images.add(pw.MemoryImage(c));
+  }
 
   // Agregar las tablas al documento PDF
   pdf.addPage(
@@ -664,27 +637,41 @@ Future<void> generateAndDownloadPdf(
           datosReporteTable,
           pw.SizedBox(height: 10),
           pw.DecoratedBox(
-            child: pw.Column(children: [
-              pw.SizedBox(height: 20),
-              pw.Text('Tabla de Colchones',
-                  style: pw.TextStyle(
-                      fontSize: 18, fontWeight: pw.FontWeight.bold)),
-              pw.SizedBox(height: 10),
-              modelosTable,
-              pw.SizedBox(height: 20),
-              pw.Text('Tabla de Fallos',
-                  style: pw.TextStyle(
-                      fontSize: 18, fontWeight: pw.FontWeight.bold)),
-              pw.SizedBox(height: 10),
-              colchonesTable,
-              pw.SizedBox(height: 20),
-              pw.Text('Total Registrado de Fallos en Colchones',
-                  style: pw.TextStyle(
-                      fontSize: 18, fontWeight: pw.FontWeight.bold)),
-              pw.SizedBox(height: 10),
-              contadoresTable,
-              pw.SizedBox(height: 10),
-            ]),
+            child: pw.Column(
+              children: [
+                pw.SizedBox(height: 20),
+                pw.Text('Tabla de Colchones',
+                    style: pw.TextStyle(
+                        fontSize: 18, fontWeight: pw.FontWeight.bold)),
+                pw.SizedBox(height: 10),
+                modelosTable,
+                pw.SizedBox(height: 20),
+                if (images.length > 1)
+                  pw.Text('Grafico de Colchones',
+                      style: pw.TextStyle(
+                          fontSize: 18, fontWeight: pw.FontWeight.bold)),
+                pw.SizedBox(height: 20),
+                if (images.length > 1) pw.Image(images[1]),
+                pw.SizedBox(height: 20),
+                pw.Text('Tabla de Fallos',
+                    style: pw.TextStyle(
+                        fontSize: 18, fontWeight: pw.FontWeight.bold)),
+                pw.SizedBox(height: 10),
+                colchonesTable,
+                pw.SizedBox(height: 20),
+                pw.Text('Grafico de fallos',
+                    style: pw.TextStyle(
+                        fontSize: 18, fontWeight: pw.FontWeight.bold)),
+                if (images.iterator.moveNext()) pw.Image(images[0]),
+                pw.SizedBox(height: 20),
+                pw.Text('Total Registrado de Fallos en Colchones',
+                    style: pw.TextStyle(
+                        fontSize: 18, fontWeight: pw.FontWeight.bold)),
+                pw.SizedBox(height: 10),
+                contadoresTable,
+                pw.SizedBox(height: 10),
+              ],
+            ),
             decoration: pw.BoxDecoration(
               color: PdfColors.white,
               //color: pw.Colors.blue.opacity(),
@@ -696,6 +683,12 @@ Future<void> generateAndDownloadPdf(
       },
     ),
   );
+
+/*   pdf.addPage(pw.Page(build: (pw.Context context) {
+    return pw.Center(
+      child: pw.Image(image1),
+    ); // Center
+  }));  */ // Page
 
   final Uint8List bytes = await pdf.save();
 
@@ -722,10 +715,9 @@ class ChartData {
 }
 
 class TipoColchonData {
-  final String tipo;
-  final int cantidad;
-
   TipoColchonData(this.tipo, this.cantidad);
+  final String tipo;
+  final num cantidad;
 }
 
 class SendEmailView extends StatefulWidget {
@@ -736,9 +728,14 @@ class SendEmailView extends StatefulWidget {
 class _SendEmailViewState extends State<SendEmailView> {
   String filtro = "";
   String selectedFiltro = '';
+  late GlobalKey _barChartKey1;
+  late GlobalKey _barChartKey2;
+
   @override
   void initState() {
     super.initState();
+    _barChartKey1 = GlobalKey();
+    _barChartKey2 = GlobalKey();
 
     Provider.of<CategoriesProvider>(context, listen: false).getLotes();
     Provider.of<ColchonesProvider>(context, listen: false).getColchones();
@@ -776,6 +773,20 @@ class _SendEmailViewState extends State<SendEmailView> {
 
       setState(() {});
     }
+  }
+
+  Future<Uint8List?> _readImageData(GlobalKey _barChartKey) async {
+    if (_barChartKey.currentContext != null) {
+      final RenderRepaintBoundary boundary = _barChartKey.currentContext
+          ?.findRenderObject() as RenderRepaintBoundary;
+
+      final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+      final ByteData? bytes =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+      return bytes!.buffer
+          .asUint8List(bytes.offsetInBytes, bytes.lengthInBytes);
+    }
+    return null;
   }
 
   @override
@@ -917,28 +928,14 @@ class _SendEmailViewState extends State<SendEmailView> {
     ];
 
     final series = [
-      charts.Series<TipoColchonData, String>(
-        id: 'Cantidad',
-        domainFn: (TipoColchonData data, _) => data.tipo,
-        measureFn: (TipoColchonData data, _) => data.cantidad,
-        data: data,
+      ColumnSeries<TipoColchonData, String>(
+        dataSource: data,
+        xValueMapper: (TipoColchonData data, _) => data.tipo,
+        yValueMapper: (TipoColchonData data, _) => data.cantidad,
+        // Sets the corner radius
+        borderRadius: BorderRadius.all(Radius.circular(15)),
       ),
     ];
-
-    final barChart = charts.BarChart(
-      series,
-      animate: true,
-      vertical: true,
-      defaultRenderer: charts.BarRendererConfig(
-        barRendererDecorator: charts.BarLabelDecorator<String>(
-          labelPosition: charts.BarLabelPosition.auto,
-          labelPadding: 10,
-        ),
-      ),
-      domainAxis: charts.OrdinalAxisSpec(
-        renderSpec: charts.NoneRenderSpec(),
-      ),
-    );
 
     for (var colchon in colchones) {
       String codigoLote = colchon.lote.codigo;
@@ -968,23 +965,25 @@ class _SendEmailViewState extends State<SendEmailView> {
     final modelosName = Provider.of<ColchonesProvider>(context).modelos;
 
     // Genera la lista de datos para el gráfico
-    List<charts.Series<ChartData, String>> seriesList = [];
+    List<ColumnSeries<ChartData, String>> seriesList = [];
 
     for (var entry in porcentajeFallasPorLote.entries) {
       String codigoLote = entry.key;
       double porcentajeFallas = entry.value;
 
       seriesList.add(
-        charts.Series<ChartData, String>(
-          id: codigoLote,
-          domainFn: (ChartData data, _) =>
+        ColumnSeries<ChartData, String>(
+          //dataLabelMapper: codigoLote,
+          xValueMapper: (ChartData data, _) =>
               "${data.loteCodigo}\n${data.porcentajeFallas.toStringAsFixed(2)}%",
-          measureFn: (ChartData data, _) => data.porcentajeFallas,
-          data: [ChartData(codigoLote, porcentajeFallas)],
-          labelAccessorFn: (ChartData data, _) => '',
+          yValueMapper: (ChartData data, _) => data.porcentajeFallas,
+          dataSource: [ChartData(codigoLote, porcentajeFallas)],
+          dataLabelMapper: (ChartData data, _) => '',
+          borderRadius: BorderRadius.all(Radius.circular(15)),
         ),
       );
     }
+
     for (var lote in lotes) {
       if (lote.estadoRevision == true) {
         cantidadRevisados++;
@@ -1006,390 +1005,553 @@ class _SendEmailViewState extends State<SendEmailView> {
     final user = Provider.of<AuthProvider>(context).user!;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: ListView(
-        physics: ClampingScrollPhysics(),
-        children: [
-          SizedBox(height: 20),
-          //CABECERA Y FILTROS
-          DropdownButtonFormField<String>(
-            value: null,
-            dropdownColor: Colors.white,
-            items: tipoFiltro.map((medida) {
-              return DropdownMenuItem<String>(
-                value: medida,
-                child: Text(
-                  medida,
-                  style: TextStyle(color: Colors.black),
-                ),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                //selectedFiltro = value;
-                selectedFiltro = value.toString();
-              });
-            },
-            decoration: InputDecoration(
-              labelText: "Tipo de filtro",
-              labelStyle: TextStyle(color: Colors.black),
-              border: OutlineInputBorder(),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
+      child: SingleChildScrollView(
+        child: Column(
+          //physics: ClampingScrollPhysics(),
+          children: [
+            Container(
+              alignment: Alignment.center,
+              child: Text(
+                'Reportes de Fallos',
+                style: TextStyle(
+                    color: Color.fromRGBO(0, 83, 157, 1),
+                    fontSize: 35,
+                    fontWeight: FontWeight.w600),
               ),
             ),
-          ),
 
-          IconButton(
-            onPressed: () async {
-              await showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  TextEditingController _controller =
-                      TextEditingController(); // Controlador para manejar el valor del campo de texto
+            SizedBox(height: 40),
 
-                  return AlertDialog(
-                    title: Text('Ingresar Comentario'),
-                    content: TextFormField(
-                      controller: _controller,
-                      decoration: InputDecoration(
-                        hintText: 'Comentario',
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(color: Colors.grey.shade200)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          child: Text(
+                            'Filtros',
+                            style: TextStyle(
+                                fontSize: 22, fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: () async {
+                            await showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                TextEditingController _controller =
+                                    TextEditingController(); // Controlador para manejar el valor del campo de texto
+
+                                return AlertDialog(
+                                  title: Text('Ingresar Comentario'),
+                                  content: TextFormField(
+                                    controller: _controller,
+                                    decoration: InputDecoration(
+                                      hintText: 'Comentario',
+                                    ),
+                                  ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: Text('Cancelar'),
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .pop(); // Cerrar el cuadro de diálogo sin comentario
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: Text('Aceptar'),
+                                      onPressed: () async {
+                                        String comentario = _controller
+                                            .text; // Obtener el valor del campo de texto
+                                        if (comentario.isNotEmpty) {
+                                          List<Uint8List> charts = [];
+                                          if (_barChartKey1
+                                              .isDefinedAndNotNull) {
+                                            final image = await _readImageData(
+                                                _barChartKey1);
+                                            if (image != null)
+                                              charts.add(image);
+                                          }
+                                          if (_barChartKey2
+                                              .isDefinedAndNotNull) {
+                                            final image = await _readImageData(
+                                                _barChartKey2);
+                                            if (image != null)
+                                              charts.add(image);
+                                          }
+
+                                          generateAndDownloadPdf(
+                                              user.nombre,
+                                              user.rol,
+                                              comentario,
+                                              selectedFiltro,
+                                              colchones,
+                                              charts,
+                                              totalGeneral,
+                                              contadorBordeTapaOndulado,
+                                              contadorEsquinaColSobreSalida,
+                                              contadorEsquinaTapaMalformada,
+                                              contadorHiloSueltoReata,
+                                              contadorHiloSueltoRemate,
+                                              contadorHiloSueltoAlcochado,
+                                              contadorHiloSueltoInterior,
+                                              contadorPuntaSaltadaReata,
+                                              contadorReataRasgadaEnganchada,
+                                              contadorTipoRemateInadecuado,
+                                              contadorTelaEspumaSalidaReata,
+                                              contadorTapaDescuadrada,
+                                              contadorTelaRasgada,
+                                              contadorNinguno,
+                                              contadorOtros,
+                                              contadorPresenciaHiloSuelto);
+                                        }
+                                        Navigator.of(context)
+                                            .pop(); // Cerrar el cuadro de diálogo
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          style: OutlinedButton.styleFrom(
+                              // side: BorderSide(
+                              //   // color: Color.fromRGBO(0, 83, 157, 1)
+                              // )
+                              ),
+                          icon: Icon(Icons.picture_as_pdf, color: Colors.red),
+                          label: Text(
+                            'Generar',
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              child: Text(
+                                'Tipo de filtro',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Container(
+                              width: 150,
+                              child: DropdownButtonFormField<String>(
+                                value: 'Modelo',
+                                dropdownColor: Colors.white,
+                                items: tipoFiltro.map((medida) {
+                                  return DropdownMenuItem<String>(
+                                    value: medida,
+                                    child: Text(
+                                      medida,
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedFiltro = value.toString();
+                                  });
+                                },
+                                decoration: InputDecoration(
+                                  // labelText: "Tipo de filtro",
+                                  // labelStyle: TextStyle(color: Colors.black),
+                                  hintText: 'Seleccione',
+                                  border: OutlineInputBorder(),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.black),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.black),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 40),
+                        Expanded(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (selectedFiltro == "Modelo")
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      child: Text(
+                                        'Tipo de modelo',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Container(
+                                      width: 200,
+                                      child: DropdownButtonFormField<String>(
+                                        value: null,
+                                        dropdownColor: Colors.white,
+                                        items: modelosName.map((modeloN) {
+                                          return DropdownMenuItem<String>(
+                                            value: modeloN,
+                                            child: Text(
+                                              modeloN,
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            ),
+                                          );
+                                        }).toList(),
+                                        onChanged: (value) async {
+                                          filtro = value!;
+                                          await provider
+                                              .getColchonesFiltroModelo(filtro);
+                                        },
+                                        decoration: InputDecoration(
+                                          // labelText: "Filtro de modelos",
+                                          // labelStyle: TextStyle(color: Colors.black),
+                                          hintText: 'Seleccione',
+                                          border: OutlineInputBorder(),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide:
+                                                BorderSide(color: Colors.black),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide:
+                                                BorderSide(color: Colors.black),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              if (selectedFiltro == "Fecha")
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Desde",
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 18),
+                                        ),
+                                        SizedBox(height: 10),
+                                        CustomOutlinedButton(
+                                          text: _fechaController.text == ""
+                                              ? "Seleccione"
+                                              : _fechaController.text,
+                                          onPressed: () => _selectDate(context),
+                                        )
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      width: 50,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Hasta",
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 18),
+                                        ),
+                                        SizedBox(height: 10),
+                                        CustomOutlinedButton(
+                                          text: _fechaController2.text == ""
+                                              ? "Seleccione"
+                                              : _fechaController2.text,
+                                          onPressed: () =>
+                                              _selectDate2(context),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              if (selectedFiltro == "Código")
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      child: Text(
+                                        'Código de lote',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Container(
+                                      width: 300,
+                                      child: TextFormField(
+                                        initialValue: filtro,
+                                        onChanged: (value) async {
+                                          filtro = value;
+                                          await provider
+                                              .getColchonesFiltroCodigo(filtro);
+                                        },
+                                        keyboardType: TextInputType.text,
+
+                                        decoration:
+                                            CustomInputs.loginInputDecoration(
+                                                hint: '12345',
+                                                // label: 'Buscar por código de lote',
+                                                icon: Icons.numbers),
+                                        // style: TextStyle(color: Colors.white),
+                                        // maxLength: 10, // Set maximum input length to 7 characters
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 40),
+
+            if (selectedFiltro != "Modelo")
+              WhiteCard(
+                backgroundColor: Colors.white,
+                title: 'Porcentaje de Fallas por Lote',
+                child: Container(
+                  height: 300,
+                  child: Scaffold(
+                    body: Center(
+                      child: Container(
+                        child: SfCartesianChart(
+                          key: _barChartKey2,
+                          primaryXAxis: CategoryAxis(
+                            edgeLabelPlacement: EdgeLabelPlacement.shift,
+                          ),
+                          primaryYAxis: NumericAxis(),
+                          series: seriesList,
+                        ),
                       ),
                     ),
-                    actions: <Widget>[
-                      TextButton(
-                        child: Text('Cancelar'),
-                        onPressed: () {
-                          Navigator.of(context)
-                              .pop(); // Cerrar el cuadro de diálogo sin comentario
-                        },
-                      ),
-                      TextButton(
-                        child: Text('Aceptar'),
-                        onPressed: () {
-                          String comentario = _controller
-                              .text; // Obtener el valor del campo de texto
-                          if (comentario.isNotEmpty) {
-                            generateAndDownloadPdf(
-                                user.nombre,
-                                user.rol,
-                                comentario,
-                                selectedFiltro,
-                                colchones,
-                                totalGeneral,
-                                contadorBordeTapaOndulado,
-                                contadorEsquinaColSobreSalida,
-                                contadorEsquinaTapaMalformada,
-                                contadorHiloSueltoReata,
-                                contadorHiloSueltoRemate,
-                                contadorHiloSueltoAlcochado,
-                                contadorHiloSueltoInterior,
-                                contadorPuntaSaltadaReata,
-                                contadorReataRasgadaEnganchada,
-                                contadorTipoRemateInadecuado,
-                                contadorTelaEspumaSalidaReata,
-                                contadorTapaDescuadrada,
-                                contadorTelaRasgada,
-                                contadorNinguno,
-                                contadorOtros,
-                                contadorPresenciaHiloSuelto);
-                          }
-                          Navigator.of(context)
-                              .pop(); // Cerrar el cuadro de diálogo
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            icon: Icon(Icons.picture_as_pdf, color: Colors.red),
-          ),
-
-          if (selectedFiltro == "Modelo")
-            DropdownButtonFormField<String>(
-              value: null,
-              dropdownColor: Colors.white,
-              items: modelosName.map((modeloN) {
-                return DropdownMenuItem<String>(
-                  value: modeloN,
-                  child: Text(
-                    modeloN,
-                    style: TextStyle(color: Colors.black),
                   ),
-                );
-              }).toList(),
-              onChanged: (value) async {
-                filtro = value!;
-                print(filtro);
-                await provider.getColchonesFiltroModelo(filtro);
-              },
-              decoration: InputDecoration(
-                labelText: "Filtro de modelos",
-                labelStyle: TextStyle(color: Colors.black),
-                border: OutlineInputBorder(),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black),
+              ),
+
+            // GRAFICO DE LOS COLCHONES
+            Card(
+              child: Container(
+                color: Colors.white,
+                height: 500, // Ajusta la altura según tus necesidades
+                padding: EdgeInsets.only(top: 50, left: 5, right: 5, bottom: 5),
+                child: Scaffold(
+                  body: Center(
+                    child: Container(
+                      child: SfCartesianChart(
+                          key: _barChartKey1,
+                          primaryXAxis: CategoryAxis(
+                            edgeLabelPlacement: EdgeLabelPlacement.shift,
+                            labelRotation: 300,
+                          ),
+                          primaryYAxis: NumericAxis(),
+                          series: series),
+                    ),
+                  ),
                 ),
               ),
             ),
-          if (selectedFiltro == "Fecha")
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Wrap(
               children: [
-                SizedBox(
-                  width: 20,
-                ),
-                Text(
-                  "Desde: ",
-                  style: TextStyle(color: Colors.black),
-                ),
-                CustomOutlinedButton(
-                  text: _fechaController.text == ""
-                      ? "Seleccione"
-                      : _fechaController.text,
-                  onPressed: () => _selectDate(context),
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                Text(
-                  "Hasta: ",
-                  style: TextStyle(color: Colors.black),
-                ),
-                CustomOutlinedButton(
-                  text: _fechaController2.text == ""
-                      ? "Seleccione"
-                      : _fechaController2.text,
-                  onPressed: () => _selectDate2(context),
+                WhiteCard(
+                  backgroundColor: Colors.white,
+                  // width: 800,
+                  title: "Cantidad de Lotes \nRegistrados: $cantidadLotes ",
+                  child: Row(
+                    children: [
+                      WhiteCard(
+                          title:
+                              "Cantidad\nRevisados: $cantidadRevisados \nNo Revisados: $cantidadNoR",
+                          child: WhiteCard(
+                            width: 200,
+                            title: 'Registros por Día',
+                            child: Column(
+                              children: registrosPorDia.entries.map((entry) {
+                                String dia = entry.key;
+                                int cantidadRegistros = entry.value;
+
+                                return Text(
+                                  'Día $dia: $cantidadRegistros registros',
+                                  style: TextStyle(fontSize: 16),
+                                );
+                              }).toList(),
+                            ),
+                          )),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 50, left: 50),
+                        child: WhiteCard(
+                          width: 300,
+                          title: 'Colchones',
+                          child: DataTable(
+                            columnSpacing: 100,
+                            columns: [
+                              DataColumn(label: Text('Etiqueta de fila')),
+                              DataColumn(label: Text('Cuenta')),
+                            ],
+                            rows: [
+                              DataRow(
+                                cells: [
+                                  DataCell(Text('Borde Tapa Ondulado')),
+                                  DataCell(Text(
+                                      contadorBordeTapaOndulado.toString())),
+                                ],
+                              ),
+                              DataRow(
+                                cells: [
+                                  DataCell(Text('Esquina Col Sobresalida')),
+                                  DataCell(Text(contadorEsquinaColSobreSalida
+                                      .toString())),
+                                ],
+                              ),
+                              DataRow(
+                                cells: [
+                                  DataCell(Text('Esquina Tapa Malformada')),
+                                  DataCell(Text(contadorEsquinaTapaMalformada
+                                      .toString())),
+                                ],
+                              ),
+                              DataRow(
+                                cells: [
+                                  DataCell(Text('Hilo Suelto Reata')),
+                                  DataCell(
+                                      Text(contadorHiloSueltoReata.toString())),
+                                ],
+                              ),
+                              DataRow(
+                                cells: [
+                                  DataCell(Text('Hilo Suelto Remate')),
+                                  DataCell(Text(
+                                      contadorHiloSueltoRemate.toString())),
+                                ],
+                              ),
+                              DataRow(
+                                cells: [
+                                  DataCell(Text('Hilo Suelto Alcochado')),
+                                  DataCell(Text(
+                                      contadorHiloSueltoAlcochado.toString())),
+                                ],
+                              ),
+                              DataRow(
+                                cells: [
+                                  DataCell(Text('Hilo Suelto Interior')),
+                                  DataCell(Text(
+                                      contadorHiloSueltoInterior.toString())),
+                                ],
+                              ),
+                              DataRow(
+                                cells: [
+                                  DataCell(Text('Punta Saltada Reata')),
+                                  DataCell(Text(
+                                      contadorPuntaSaltadaReata.toString())),
+                                ],
+                              ),
+                              DataRow(
+                                cells: [
+                                  DataCell(Text('Reata Rasgada Enganchada')),
+                                  DataCell(Text(contadorReataRasgadaEnganchada
+                                      .toString())),
+                                ],
+                              ),
+                              DataRow(
+                                cells: [
+                                  DataCell(Text('Tipo Remate Inadecuado')),
+                                  DataCell(Text(
+                                      contadorTipoRemateInadecuado.toString())),
+                                ],
+                              ),
+                              DataRow(
+                                cells: [
+                                  DataCell(Text('Tela Espuma Salida Reata')),
+                                  DataCell(Text(contadorTelaEspumaSalidaReata
+                                      .toString())),
+                                ],
+                              ),
+                              DataRow(
+                                cells: [
+                                  DataCell(Text('Tapa Descuadrada')),
+                                  DataCell(
+                                      Text(contadorTapaDescuadrada.toString())),
+                                ],
+                              ),
+                              DataRow(
+                                cells: [
+                                  DataCell(Text('Tela Rasgada')),
+                                  DataCell(
+                                      Text(contadorTelaRasgada.toString())),
+                                ],
+                              ),
+                              DataRow(
+                                cells: [
+                                  DataCell(Text('Ninguno')),
+                                  DataCell(Text(contadorNinguno.toString())),
+                                ],
+                              ),
+                              DataRow(
+                                cells: [
+                                  DataCell(Text('Otros')),
+                                  DataCell(Text(contadorOtros.toString())),
+                                ],
+                              ),
+                              DataRow(
+                                cells: [
+                                  DataCell(Text('Presencia Hilo Suelto')),
+                                  DataCell(Text(
+                                      contadorPresenciaHiloSuelto.toString())),
+                                ],
+                              ),
+                              DataRow(
+                                cells: [
+                                  DataCell(Text('Total General')),
+                                  DataCell(Text(totalGeneral.toString())),
+                                ],
+                              ),
+                              // Agregar las demás etiquetas de fila aquí...
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
 
-          if (selectedFiltro == "Código")
-            TextFormField(
-              initialValue: filtro,
-              onChanged: (value) async {
-                filtro = value;
-                await provider.getColchonesFiltroCodigo(filtro);
-              },
-              keyboardType: TextInputType.text,
-
-              decoration: CustomInputs.loginInputDecoration(
-                  hint: 'Buscar por código de lote',
-                  label: 'Buscar por código de lote',
-                  icon: Icons.numbers),
-              style: TextStyle(color: Colors.white),
-              maxLength: 10, // Set maximum input length to 7 characters
-            ),
-
-          if (selectedFiltro != "Modelo")
-            WhiteCard(
-              backgroundColor: Colors.white,
-              title: 'Porcentaje de Fallas por Lote',
-              child: Container(
-                height: 300,
-                child: charts.BarChart(
-                  seriesList,
-                  animate: true,
-                  vertical: true,
-                  defaultInteractions: true,
-                  barRendererDecorator: charts.BarLabelDecorator<String>(
-                    labelPadding: 5,
-                    labelPosition: charts.BarLabelPosition.outside,
-                    labelAnchor: charts.BarLabelAnchor.end,
-                    insideLabelStyleSpec: charts.TextStyleSpec(
-                      color: charts.Color.black,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          Card(
-            child: Container(
-              color: Colors.white,
-              height: 400, // Ajusta la altura según tus necesidades
-              padding: EdgeInsets.only(
-                top: 50,
-                left: 5,
-                right: 5,
-                bottom: 5
-              ),
-              child: barChart,
-            ),
-          ),
-
-          Wrap(
-            children: [
-              WhiteCard(
-                backgroundColor: Colors.white,
-                // width: 800,
-                title: "Cantidad de Lotes \nRegistrados: $cantidadLotes ",
-                child: Row(
-                  children: [
-                    WhiteCard(
-                        title:
-                            "Cantidad\nRevisados: $cantidadRevisados \nNo Revisados: $cantidadNoR",
-                        child: WhiteCard(
-                          width: 200,
-                          title: 'Registros por Día',
-                          child: Column(
-                            children: registrosPorDia.entries.map((entry) {
-                              String dia = entry.key;
-                              int cantidadRegistros = entry.value;
-
-                              return Text(
-                                'Día $dia: $cantidadRegistros registros',
-                                style: TextStyle(fontSize: 16),
-                              );
-                            }).toList(),
-                          ),
-                        )),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 50, left: 50),
-                      child: WhiteCard(
-                        width: 300,
-                        title: 'Colchones',
-                        child: DataTable(
-                          columnSpacing: 100,
-                          columns: [
-                            DataColumn(label: Text('Etiqueta de fila')),
-                            DataColumn(label: Text('Cuenta')),
-                          ],
-                          rows: [
-                            DataRow(
-                              cells: [
-                                DataCell(Text('Borde Tapa Ondulado')),
-                                DataCell(
-                                    Text(contadorBordeTapaOndulado.toString())),
-                              ],
-                            ),
-                            DataRow(
-                              cells: [
-                                DataCell(Text('Esquina Col Sobresalida')),
-                                DataCell(Text(
-                                    contadorEsquinaColSobreSalida.toString())),
-                              ],
-                            ),
-                            DataRow(
-                              cells: [
-                                DataCell(Text('Esquina Tapa Malformada')),
-                                DataCell(Text(
-                                    contadorEsquinaTapaMalformada.toString())),
-                              ],
-                            ),
-                            DataRow(
-                              cells: [
-                                DataCell(Text('Hilo Suelto Reata')),
-                                DataCell(
-                                    Text(contadorHiloSueltoReata.toString())),
-                              ],
-                            ),
-                            DataRow(
-                              cells: [
-                                DataCell(Text('Hilo Suelto Remate')),
-                                DataCell(
-                                    Text(contadorHiloSueltoRemate.toString())),
-                              ],
-                            ),
-                            DataRow(
-                              cells: [
-                                DataCell(Text('Hilo Suelto Alcochado')),
-                                DataCell(Text(
-                                    contadorHiloSueltoAlcochado.toString())),
-                              ],
-                            ),
-                            DataRow(
-                              cells: [
-                                DataCell(Text('Hilo Suelto Interior')),
-                                DataCell(Text(
-                                    contadorHiloSueltoInterior.toString())),
-                              ],
-                            ),
-                            DataRow(
-                              cells: [
-                                DataCell(Text('Punta Saltada Reata')),
-                                DataCell(
-                                    Text(contadorPuntaSaltadaReata.toString())),
-                              ],
-                            ),
-                            DataRow(
-                              cells: [
-                                DataCell(Text('Reata Rasgada Enganchada')),
-                                DataCell(Text(
-                                    contadorReataRasgadaEnganchada.toString())),
-                              ],
-                            ),
-                            DataRow(
-                              cells: [
-                                DataCell(Text('Tipo Remate Inadecuado')),
-                                DataCell(Text(
-                                    contadorTipoRemateInadecuado.toString())),
-                              ],
-                            ),
-                            DataRow(
-                              cells: [
-                                DataCell(Text('Tela Espuma Salida Reata')),
-                                DataCell(Text(
-                                    contadorTelaEspumaSalidaReata.toString())),
-                              ],
-                            ),
-                            DataRow(
-                              cells: [
-                                DataCell(Text('Tapa Descuadrada')),
-                                DataCell(
-                                    Text(contadorTapaDescuadrada.toString())),
-                              ],
-                            ),
-                            DataRow(
-                              cells: [
-                                DataCell(Text('Tela Rasgada')),
-                                DataCell(Text(contadorTelaRasgada.toString())),
-                              ],
-                            ),
-                            DataRow(
-                              cells: [
-                                DataCell(Text('Ninguno')),
-                                DataCell(Text(contadorNinguno.toString())),
-                              ],
-                            ),
-                            DataRow(
-                              cells: [
-                                DataCell(Text('Otros')),
-                                DataCell(Text(contadorOtros.toString())),
-                              ],
-                            ),
-                            DataRow(
-                              cells: [
-                                DataCell(Text('Presencia Hilo Suelto')),
-                                DataCell(Text(
-                                    contadorPresenciaHiloSuelto.toString())),
-                              ],
-                            ),
-                            DataRow(
-                              cells: [
-                                DataCell(Text('Total General')),
-                                DataCell(Text(totalGeneral.toString())),
-                              ],
-                            ),
-                            // Agregar las demás etiquetas de fila aquí...
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-
-          //termina lote
-        ],
+            //termina lote
+          ],
+        ),
       ),
     );
   }

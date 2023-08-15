@@ -19,8 +19,10 @@ class TextSeparator extends StatelessWidget {
       child: Text( 
         text,
         style: TextStyle(
-          color: Colors.white.withOpacity(1),
-          fontSize: 15
+          color: Colors.white,
+          // color: Color.fromRGBO(0, 83, 157, 1),
+          fontSize: 16,
+          fontWeight: FontWeight.w600
         ),
       ),
     );

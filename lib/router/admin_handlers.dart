@@ -1,5 +1,9 @@
 import 'package:admin_dashboard/providers/auth_provider.dart';
+import 'package:admin_dashboard/ui/views/blank_view.dart';
+import 'package:admin_dashboard/ui/views/categories_view.dart';
 import 'package:admin_dashboard/ui/views/dashboard_view.dart';
+import 'package:admin_dashboard/ui/views/no_page_found_view.dart';
+import 'package:admin_dashboard/ui/views/users_view.dart';
 import 'package:fluro/fluro.dart';
 
 import 'package:admin_dashboard/ui/views/login_view.dart';
@@ -16,10 +20,23 @@ class AdminHandlers {
 
       final authProvider = Provider.of<AuthProvider>(context!);
 
-      if ( authProvider.authStatus == AuthStatus.notAuthenticated )
+      if ( authProvider.authStatus == AuthStatus.notAuthenticated ) {
         return LoginView();
-      else 
-        return DashboardView();
+      }
+      
+      if ( authProvider.user?.rol == 'SUPERVISOR_ROLE' ) {
+        return BlankView();
+      }
+
+      if ( authProvider.user?.rol == 'ADMIN_ROLE' ) {
+        return UsersView();
+      }
+
+      if ( authProvider.user?.rol == 'OPERADOR_ROLE' ) {
+        return LotesView();
+      }
+      
+      return NoPageFoundView();
 
     }
   );
@@ -46,7 +63,8 @@ class AdminHandlers {
         return DashboardView();
     }
   );
-        static Handler resset = Handler(
+  
+  static Handler resset = Handler(
     handlerFunc: ( context, params ) {
 
       final authProvider = Provider.of<AuthProvider>(context!);

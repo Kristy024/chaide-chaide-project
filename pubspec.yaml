@@ -21,7 +21,8 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  charts_flutter: ^0.12.0
+  # charts_flutter: ^0.12.0
+  syncfusion_flutter_charts: ^22.2.8
   cupertino_icons: ^1.0.2
   dio: ^4.0.0
   email_validator: ^2.0.1
@@ -30,8 +31,8 @@ dependencies:
   image: ^4.0.1
   flutter:
     sdk: flutter
-  http: ^1.0.0
-  intl: ^0.17.0
+  http: ^0.13.6
+  intl: ^0.18.0
   photo_view: ^0.14.0
   universal_html: ^2.2.3
   pdf: ^3.10.4

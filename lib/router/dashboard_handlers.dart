@@ -1,4 +1,5 @@
 import 'package:admin_dashboard/ui/views/colchon_view.dart';
+import 'package:admin_dashboard/ui/views/no_page_found_view.dart';
 import 'package:admin_dashboard/ui/views/sendEmail_view.dart';
 import 'package:admin_dashboard/ui/views/user_view.dart';
 import 'package:fluro/fluro.dart';
@@ -27,10 +28,33 @@ class DashboardHandlers {
       Provider.of<SideMenuProvider>(context, listen: false)
         .setCurrentPageUrl( Flurorouter.dashboardRoute );
 
-      if ( authProvider.authStatus == AuthStatus.authenticated )
-        return DashboardView();
-      else 
+      // if ( authProvider.authStatus == AuthStatus.authenticated )
+      //   return DashboardView();
+      // else 
+      //   return LoginView();
+
+
+
+
+      if ( authProvider.authStatus == AuthStatus.notAuthenticated ) {
         return LoginView();
+      }
+      
+      if ( authProvider.user?.rol == 'SUPERVISOR_ROLE' ) {
+        return BlankView();
+      }
+
+      if ( authProvider.user?.rol == 'ADMIN_ROLE' ) {
+        return UsersView();
+      }
+
+      if ( authProvider.user?.rol == 'OPERADOR_ROLE' ) {
+        return LotesView();
+      }
+      
+      return NoPageFoundView();
+
+        
     }
   );
 
@@ -100,10 +124,17 @@ class DashboardHandlers {
       Provider.of<SideMenuProvider>(context, listen: false)
         .setCurrentPageUrl( Flurorouter.usersRoute );
 
-      if ( authProvider.authStatus == AuthStatus.authenticated )
-        return UsersView();
-      else 
+      if ( authProvider.authStatus != AuthStatus.authenticated && authProvider.user?.rol == 'ADMIN_ROLE' ) {
         return LoginView();
+      }
+
+      if ( authProvider.user?.rol == 'ADMIN_ROLE' ) {
+        return UsersView();
+      }
+
+      return NoPageFoundView();
+        
+        
     }
   );
 

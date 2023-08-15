@@ -11,7 +11,7 @@ class SplashLayout extends StatelessWidget {
           children: [
             CircularProgressIndicator(),
             SizedBox( height: 20 ),
-            Text('Checking...')
+            Text('Cargando...')
           ],
         ),
       ),
