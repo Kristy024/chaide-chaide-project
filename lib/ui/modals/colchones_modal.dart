@@ -640,79 +640,79 @@ class _ColchonModalState extends State<ColchonModal> {
 
             // Resto de los campos del formulario para el colchón...
             Container(
-                margin: EdgeInsets.only(top: 30),
-                alignment: Alignment.center,
-                child: lotes.isNotEmpty
-                    ? CustomOutlinedButton(
-                        onPressed: () async {
-                          try {
-                            if (loteId == "") {
-                              NotificationsService.showSnackbarError(
-                                  'Seleccione el lote');
-                              return;
-                            }
-                            print(imageUrls);
-
-                            if (id == null) {
-                              // Crear
-                              await colchonesProvider.newColchon(
-                                  Colchones(
-                                      estado: true,
-                                      bordeTapaOndulado: bordeTapaOndulado,
-                                      esquinaColSobresalida:
-                                          esquinaColSobresalida,
-                                      esquinaTapaMalformada:
-                                          esquinaTapaMalformada,
-                                      hiloSueltoReata: hiloSueltoReata,
-                                      hiloSueltoRemate: hiloSueltoRemate,
-                                      hiloSueltoAlcochado: hiloSueltoAlcochado,
-                                      hiloSueltoInterior: hiloSueltoInterior,
-                                      puntaSaltadaReata: puntaSaltadaReata,
-                                      reataRasgadaEnganchada:
-                                          reataRasgadaEnganchada,
-                                      tipoRemateInadecuado:
-                                          tipoRemateInadecuado,
-                                      telaEspumaSalidaReata:
-                                          telaEspumaSalidaReata,
-                                      tapaDescuadrada: tapaDescuadrada,
-                                      telaRasgada: telaRasgada,
-                                      ninguno: ninguno,
-                                      otros: otros,
-                                      intTotal: intTotal,
-                                      presenciaHiloSuelto: presenciaHiloSuelto,
-                                      planAccion: planAccion,
-                                      observacion: observacion,
-                                      id: "0",
-                                      codigo: codigo,
-                                      lote: Lote(
-                                          id: loteId,
-                                          codigo: codigo,
-                                          modelo: "modelo"),
-                                      usuario: Usuario(id: "0", nombre: "0"),
-                                      img: imageUrls,
-                                      fechaIngreso: DateTime.now(),
-                                      medidas: medida),
-                                  otroTexto);
-                              NotificationsService.showSnackbar('Creado!');
-                            } else {
-                              // Actualizar
-                              NotificationsService.showSnackbar('Actualizado!');
-                            }
-
-                            Navigator.of(context).pop();
-                          } catch (e) {
-                            Navigator.of(context).pop();
+              margin: EdgeInsets.only(top: 30),
+              alignment: Alignment.center,
+              child: lotes.isNotEmpty
+                  ? CustomOutlinedButton(
+                      onPressed: () async {
+                        try {
+                          if (loteId == "") {
                             NotificationsService.showSnackbarError(
-                                'No se pudo guardar el colchón');
+                                'Seleccione el lote');
+                            return;
                           }
-                        },
-                        text: 'Guardar',
-                        color: Colors.white,
-                      )
-                    : Text(
-                        "Lotes vacio",
-                        style: TextStyle(color: Colors.white),
-                      )),
+                          print(imageUrls);
+
+                          if (id == null) {
+                            // Crear
+                            await colchonesProvider.newColchon(
+                                Colchones(
+                                    estado: true,
+                                    bordeTapaOndulado: bordeTapaOndulado,
+                                    esquinaColSobresalida:
+                                        esquinaColSobresalida,
+                                    esquinaTapaMalformada:
+                                        esquinaTapaMalformada,
+                                    hiloSueltoReata: hiloSueltoReata,
+                                    hiloSueltoRemate: hiloSueltoRemate,
+                                    hiloSueltoAlcochado: hiloSueltoAlcochado,
+                                    hiloSueltoInterior: hiloSueltoInterior,
+                                    puntaSaltadaReata: puntaSaltadaReata,
+                                    reataRasgadaEnganchada:
+                                        reataRasgadaEnganchada,
+                                    tipoRemateInadecuado: tipoRemateInadecuado,
+                                    telaEspumaSalidaReata:
+                                        telaEspumaSalidaReata,
+                                    tapaDescuadrada: tapaDescuadrada,
+                                    telaRasgada: telaRasgada,
+                                    ninguno: ninguno,
+                                    otros: otros,
+                                    intTotal: intTotal,
+                                    presenciaHiloSuelto: presenciaHiloSuelto,
+                                    planAccion: planAccion,
+                                    observacion: observacion,
+                                    id: "0",
+                                    codigo: codigo,
+                                    lote: Lote(
+                                        id: loteId,
+                                        codigo: codigo,
+                                        modelo: "modelo"),
+                                    usuario: Usuario(id: "0", nombre: "0"),
+                                    img: imageUrls,
+                                    fechaIngreso: DateTime.now(),
+                                    medidas: medida),
+                                otroTexto);
+                            NotificationsService.showSnackbar('Creado!');
+                          } else {
+                            // Actualizar
+                            NotificationsService.showSnackbar('Actualizado!');
+                          }
+
+                          Navigator.of(context).pop();
+                        } catch (e) {
+                          Navigator.of(context).pop();
+                          NotificationsService.showSnackbarError(
+                              'No se pudo guardar el colchón');
+                        }
+                      },
+                      text: 'Guardar',
+                      color: Colors.black,
+                    )
+                  : Text(
+                      "Lotes vacio",
+                      style: TextStyle(color: Colors.black),
+                    ),
+            ),
           ],
         ),
       ),
