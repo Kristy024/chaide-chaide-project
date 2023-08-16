@@ -1,0 +1,10 @@
+PORT=8080
+
+MONGODB_CNN=mongodb+srv://kentandrade1:yqdnZVPTYStJA2nw@medicoscluster.d6mcygq.mongodb.net/medicinaDB
+
+SECRETORPRIVATEKEY=123asd456qwe
+
+CLOUDINARY_URL=
+
+
+JWT_SECRET=mi_secreto

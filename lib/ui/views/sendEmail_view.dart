@@ -1178,7 +1178,7 @@ class _SendEmailViewState extends State<SendEmailView> {
                                     print('cambio el filtro');
                                     filtro = "";
                                     _fechaController.text = "";
-                                    _fechaController2.text = "";
+                                    _fechaController2.text = "";  
                                     fechaInicio = null;
                                     fechaFin = null;
                                     colchones.clear();

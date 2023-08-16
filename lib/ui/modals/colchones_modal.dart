@@ -28,7 +28,7 @@ class ColchonModal extends StatefulWidget {
 }
 
 class _ColchonModalState extends State<ColchonModal> {
-      String filtro="";
+  String filtro = "";
   bool bordeTapaOndulado = false;
   bool esquinaColSobresalida = false;
   bool esquinaTapaMalformada = false;
@@ -55,7 +55,7 @@ class _ColchonModalState extends State<ColchonModal> {
   String loteId = '';
   String? selectedmedidas = '80x190';
   String medida = '80x190';
-  List<String> imageUrls=[];
+  List<String> imageUrls = [];
   @override
   void initState() {
     super.initState();
@@ -116,7 +116,7 @@ class _ColchonModalState extends State<ColchonModal> {
   Widget build(BuildContext context) {
     final colchonesProvider =
         Provider.of<ColchonesProvider>(context, listen: false);
-         final provider= Provider.of<CategoriesProvider>(context, listen: false);
+    final provider = Provider.of<CategoriesProvider>(context, listen: false);
     final lotes = Provider.of<CategoriesProvider>(context).lotes;
     if (lotes.isNotEmpty) selectedLoteId = lotes[0].id;
     List<String> medidas = [
@@ -131,7 +131,7 @@ class _ColchonModalState extends State<ColchonModal> {
     return Container(
       padding: EdgeInsets.all(20),
       height: size.height,
-      width: size.width * 0.8,
+      width: size.width * 0.5,
       decoration: buildBoxDecoration(),
       child: SingleChildScrollView(
         child: Column(
@@ -141,236 +141,361 @@ class _ColchonModalState extends State<ColchonModal> {
               children: [
                 Text(
                   widget.colchon?.codigo ?? 'Nuevo Colchón',
-                  style: CustomLabels.h1.copyWith(color: Colors.white),
+                  style: CustomLabels.h1.copyWith(color: Colors.black),
                 ),
                 IconButton(
-                  icon: Icon(Icons.close, color: Colors.white),
+                  icon: Icon(Icons.close, color: Colors.black),
                   onPressed: () => Navigator.of(context).pop(),
                 )
               ],
             ),
             Divider(color: Colors.white.withOpacity(0.3)),
             SizedBox(height: 20),
-            // Resto de los campos del formulario para el colchón...
-            CheckboxListTile(
-              title: Text(
-                'Borde Tapa Ondulado',
-                style: TextStyle(color: Colors.white),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(color: Colors.grey.shade200),
               ),
-              value: bordeTapaOndulado,
-              onChanged: (bool? value) {
-                setState(() {
-                  bordeTapaOndulado = value ?? false;
-                });
-              },
-            ),
-            CheckboxListTile(
-              title: Text(
-                'Esquina Col Sobresalida',
-                style: TextStyle(color: Colors.white),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          child: Text(
+                            'Fallos',
+                            style: TextStyle(
+                                fontSize: 22, fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: CheckboxListTile(
+                                title: Text(
+                                  'Borde Tapa Ondulado',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                value: bordeTapaOndulado,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    bordeTapaOndulado = value ?? false;
+                                  });
+                                },
+                              ),
+                            ),
+                            Expanded(
+                              child: CheckboxListTile(
+                                title: Text(
+                                  'Esquina Tapa Malformada',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                value: esquinaTapaMalformada,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    esquinaTapaMalformada = value ?? false;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: CheckboxListTile(
+                                title: Text(
+                                  'Hilo Suelto Reata',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                value: hiloSueltoReata,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    hiloSueltoReata = value ?? false;
+                                  });
+                                },
+                              ),
+                            ),
+                            Expanded(
+                              child: CheckboxListTile(
+                                title: Text(
+                                  'Hilo Suelto Remate',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                value: hiloSueltoRemate,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    hiloSueltoRemate = value ?? false;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: CheckboxListTile(
+                                title: Text(
+                                  'Hilo Suelto Alcochado',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                value: hiloSueltoAlcochado,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    hiloSueltoAlcochado = value ?? false;
+                                  });
+                                },
+                              ),
+                            ),
+                            Expanded(
+                              child: CheckboxListTile(
+                                title: Text(
+                                  'Hilo Suelto Interior',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                value: hiloSueltoInterior,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    hiloSueltoInterior = value ?? false;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: CheckboxListTile(
+                                title: Text(
+                                  'Reata Rasgada Enganchada',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                value: reataRasgadaEnganchada,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    reataRasgadaEnganchada = value ?? false;
+                                  });
+                                },
+                              ),
+                            ),
+                            Expanded(
+                              child: CheckboxListTile(
+                                title: Text(
+                                  'Tipo Remate Inadecuado',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                value: tipoRemateInadecuado,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    tipoRemateInadecuado = value ?? false;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: CheckboxListTile(
+                                title: Text(
+                                  'Tela Espuma Salida Reata',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                value: telaEspumaSalidaReata,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    telaEspumaSalidaReata = value ?? false;
+                                  });
+                                },
+                              ),
+                            ),
+                            Expanded(
+                              child: CheckboxListTile(
+                                title: Text(
+                                  'Tapa Descuadrada',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                value: tapaDescuadrada,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    tapaDescuadrada = value ?? false;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: CheckboxListTile(
+                                title: Text(
+                                  'Tela Rasgada',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                value: telaRasgada,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    telaRasgada = value ?? false;
+                                  });
+                                },
+                              ),
+                            ),
+                            Expanded(
+                              child: CheckboxListTile(
+                                title: Text(
+                                  'Punta salteada reata',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                value: puntaSaltadaReata,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    puntaSaltadaReata = value ?? false;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: CheckboxListTile(
+                                title: Text(
+                                  'Presencia Hilo Suelto',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                value: presenciaHiloSuelto,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    presenciaHiloSuelto = value ?? false;
+                                  });
+                                },
+                              ),
+                            ),
+                            Expanded(
+                              child: CheckboxListTile(
+                                title: Text(
+                                  'Ninguno',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                value: ninguno,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    ninguno = value ?? false;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: CheckboxListTile(
+                                title: Text(
+                                  'Otros',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                value: otros,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    otros = value ?? false;
+                                  });
+                                },
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Resto de los campos del formulario para el colchón...
+                    ],
+                  ),
+                ],
               ),
-              value: esquinaColSobresalida,
-              onChanged: (bool? value) {
-                setState(() {
-                  esquinaColSobresalida = value ?? false;
-                });
-              },
             ),
-            CheckboxListTile(
-              title: Text(
-                'Esquina Tapa Malformada',
-                style: TextStyle(color: Colors.white),
+
+            if (otros != false) SizedBox(height: 30),
+
+            if (otros != false)
+              TextFormField(
+                initialValue: otroTexto,
+                onChanged: (value) => otroTexto = value,
+                decoration: CustomInputs.loginInputDecoration(
+                  hint: 'Describa el fallo',
+                  label: 'Otro fallo',
+                  icon: Icons.comment,
+                ),
+                style: TextStyle(color: Colors.black),
               ),
-              value: esquinaTapaMalformada,
-              onChanged: (bool? value) {
-                setState(() {
-                  esquinaTapaMalformada = value ?? false;
-                });
-              },
-            ),
-            CheckboxListTile(
-              title: Text(
-                'Hilo Suelto Reata',
-                style: TextStyle(color: Colors.white),
-              ),
-              value: hiloSueltoReata,
-              onChanged: (bool? value) {
-                setState(() {
-                  hiloSueltoReata = value ?? false;
-                });
-              },
-            ),
-            CheckboxListTile(
-              title: Text(
-                'Hilo Suelto Remate',
-                style: TextStyle(color: Colors.white),
-              ),
-              value: hiloSueltoRemate,
-              onChanged: (bool? value) {
-                setState(() {
-                  hiloSueltoRemate = value ?? false;
-                });
-              },
-            ),
-            CheckboxListTile(
-              title: Text(
-                'Hilo Suelto Alcochado',
-                style: TextStyle(color: Colors.white),
-              ),
-              value: hiloSueltoAlcochado,
-              onChanged: (bool? value) {
-                setState(() {
-                  hiloSueltoAlcochado = value ?? false;
-                });
-              },
-            ),
-            CheckboxListTile(
-              title: Text(
-                'Hilo Suelto Interior',
-                style: TextStyle(color: Colors.white),
-              ),
-              value: hiloSueltoInterior,
-              onChanged: (bool? value) {
-                setState(() {
-                  hiloSueltoInterior = value ?? false;
-                });
-              },
-            ),
-            CheckboxListTile(
-              title: Text(
-                'Reata Rasgada Enganchada',
-                style: TextStyle(color: Colors.white),
-              ),
-              value: reataRasgadaEnganchada,
-              onChanged: (bool? value) {
-                setState(() {
-                  reataRasgadaEnganchada = value ?? false;
-                });
-              },
-            ),
-            CheckboxListTile(
-              title: Text(
-                'Tipo Remate Inadecuado',
-                style: TextStyle(color: Colors.white),
-              ),
-              value: tipoRemateInadecuado,
-              onChanged: (bool? value) {
-                setState(() {
-                  tipoRemateInadecuado = value ?? false;
-                });
-              },
-            ),
-            CheckboxListTile(
-              title: Text(
-                'Tela Espuma Salida Reata',
-                style: TextStyle(color: Colors.white),
-              ),
-              value: telaEspumaSalidaReata,
-              onChanged: (bool? value) {
-                setState(() {
-                  telaEspumaSalidaReata = value ?? false;
-                });
-              },
-            ),
-            CheckboxListTile(
-              title: Text(
-                'Tapa Descuadrada',
-                style: TextStyle(color: Colors.white),
-              ),
-              value: tapaDescuadrada,
-              onChanged: (bool? value) {
-                setState(() {
-                  tapaDescuadrada = value ?? false;
-                });
-              },
-            ),
-            CheckboxListTile(
-              title: Text(
-                'Tela Rasgada',
-                style: TextStyle(color: Colors.white),
-              ),
-              value: telaRasgada,
-              onChanged: (bool? value) {
-                setState(() {
-                  telaRasgada = value ?? false;
-                });
-              },
-            ),
-            CheckboxListTile(
-              title: Text(
-                'Punta salteada reata',
-                style: TextStyle(color: Colors.white),
-              ),
-              value: puntaSaltadaReata,
-              onChanged: (bool? value) {
-                setState(() {
-                  puntaSaltadaReata = value ?? false;
-                });
-              },
-            ),
-            CheckboxListTile(
-              title: Text(
-                'Presencia Hilo Suelto',
-                style: TextStyle(color: Colors.white),
-              ),
-              value: presenciaHiloSuelto,
-              onChanged: (bool? value) {
-                setState(() {
-                  presenciaHiloSuelto = value ?? false;
-                });
-              },
-            ),
-            CheckboxListTile(
-              title: Text(
-                'Ninguno',
-                style: TextStyle(color: Colors.white),
-              ),
-              value: ninguno,
-              onChanged: (bool? value) {
-                setState(() {
-                  ninguno = value ?? false;
-                });
-              },
-            ),
-            CheckboxListTile(
-              title: Text(
-                'Otros',
-                style: TextStyle(color: Colors.white),
-              ),
-              value: otros,
-              onChanged: (bool? value) {
-                setState(() {
-                  otros = value ?? false;
-                });
-              },
-            ),
-            if(otros!=false)
-            TextFormField(
-              initialValue: otroTexto,
-              onChanged: (value) => otroTexto = value,
-              decoration: CustomInputs.loginInputDecoration(
-                hint: '',
-                label: '',
-                icon: Icons.comment,
-              ),
-              style: TextStyle(color: Colors.white),
-            ),
-            SizedBox(height: 30,),
+
+            SizedBox(height: 30),
 
             TextFormField(
               initialValue: codigo,
               onChanged: (value) => codigo = value,
-               inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'\d+')),
-            ],
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'\d+')),
+              ],
               decoration: CustomInputs.loginInputDecoration(
                 hint: 'Código',
                 label: 'Código',
                 icon: Icons.assignment,
               ),
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.black),
               maxLength: 10,
             ),
+
+            SizedBox(height: 10),
+
             TextFormField(
               initialValue: planAccion,
               onChanged: (value) => planAccion = value,
@@ -379,8 +504,11 @@ class _ColchonModalState extends State<ColchonModal> {
                 label: 'Plan de Acción',
                 icon: Icons.assignment,
               ),
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.black),
             ),
+
+            SizedBox(height: 30),
+
             TextFormField(
               initialValue: observacion,
               onChanged: (value) => observacion = value,
@@ -389,72 +517,81 @@ class _ColchonModalState extends State<ColchonModal> {
                 label: 'Observación',
                 icon: Icons.comment,
               ),
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.black),
             ),
-            SizedBox(height: 20,),
-             Padding(
-               padding: const EdgeInsets.only(left:50.0),
-               child: TextFormField(
-                textAlign: TextAlign.end,
-                         initialValue: filtro,
-                         onChanged: (value) async {
-                filtro=value;
-               await provider.getLotesFiltro(filtro);
-                         },
-                         keyboardType: TextInputType.text,
-                 
-                         decoration: CustomInputs.loginInputDecoration(
-                hint: 'Buscar lote', 
-                label: 'Buscar lote', 
-                icon: Icons.search_off,
-                
-                         ),
-                         style: TextStyle(color: Colors.white),
-                         maxLength: 10, // Set maximum input length to 7 characters
-                       ),
-             ),
-            
-              DropdownButtonFormField<String>(
-                value: selectedLoteId,
-                dropdownColor: Colors.black,
-                items: lotes.map((lote) {
-                  return DropdownMenuItem<String>(
-                    value: lote.id,
-                    child: Text(
-                      lote.codigo,
-                      style: TextStyle(color: Colors.white),
+
+            SizedBox(height: 20),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.only(top: 15, right: 5),
+                    child: TextFormField(
+                      //textAlign: TextAlign.end,
+                      initialValue: filtro,
+                      onChanged: (value) async {
+                        filtro = value;
+                        await provider.getLotesFiltro(filtro);
+                      },
+                      keyboardType: TextInputType.text,
+                      decoration: CustomInputs.loginInputDecoration(
+                        hint: 'Buscar lote',
+                        label: 'Buscar lote',
+                        icon: Icons.search,
+                      ),
+                      style: TextStyle(color: Colors.black),
+                      maxLength: 10, // Set maximum input length to 7 characters
                     ),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedLoteId = value;
-                    loteId = value.toString();
-                    print(loteId);
-                  });
-                },
-                decoration: InputDecoration(
-                  labelText: 'Lote',
-                  labelStyle: TextStyle(color: Colors.white),
-                  border: OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
                   ),
                 ),
-              ),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: selectedLoteId,
+                    dropdownColor: Colors.white,
+                    items: lotes.map((lote) {
+                      return DropdownMenuItem<String>(
+                        value: lote.id,
+                        child: Text(
+                          lote.codigo,
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedLoteId = value;
+                        loteId = value.toString();
+                        print(loteId);
+                      });
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Lote',
+                      labelStyle: TextStyle(color: Colors.black),
+                      border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
 
             DropdownButtonFormField<String>(
               value: selectedmedidas,
-              dropdownColor: Colors.black,
+              dropdownColor: Colors.white,
               items: medidas.map((medida) {
                 return DropdownMenuItem<String>(
                   value: medida,
                   child: Text(
                     medida,
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.black),
                   ),
                 );
               }).toList(),
@@ -466,35 +603,39 @@ class _ColchonModalState extends State<ColchonModal> {
               },
               decoration: InputDecoration(
                 labelText: 'medidas',
-                labelStyle: TextStyle(color: Colors.white),
+                labelStyle: TextStyle(color: Colors.black),
                 border: OutlineInputBorder(),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
+                  borderSide: BorderSide(color: Colors.black),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
+                  borderSide: BorderSide(color: Colors.black),
                 ),
               ),
             ),
+
             SizedBox(height: 10),
+
             ElevatedButton(
               onPressed: _uploadImages,
               child: Text('Cargar imágenes'),
             ),
+
             SizedBox(height: 10),
-            
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: imageUrls
-                    .map((imageUrl) => Image.network(
-                          imageUrl,
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                        ))
-                    .toList(),
-              ),
+
+            //IMAGEN
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: imageUrls
+                  .map((imageUrl) => Image.network(
+                        imageUrl,
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                      ))
+                  .toList(),
+            ),
             SizedBox(height: 20),
 
             // Resto de los campos del formulario para el colchón...
@@ -511,38 +652,47 @@ class _ColchonModalState extends State<ColchonModal> {
                               return;
                             }
                             print(imageUrls);
-                          
+
                             if (id == null) {
                               // Crear
-                              await colchonesProvider.newColchon(Colchones(
-                                  estado: true,
-                                  bordeTapaOndulado: bordeTapaOndulado,
-                                  esquinaColSobresalida: esquinaColSobresalida,
-                                  esquinaTapaMalformada: esquinaTapaMalformada,
-                                  hiloSueltoReata: hiloSueltoReata,
-                                  hiloSueltoRemate: hiloSueltoRemate,
-                                  hiloSueltoAlcochado: hiloSueltoAlcochado,
-                                  hiloSueltoInterior: hiloSueltoInterior,
-                                  puntaSaltadaReata: puntaSaltadaReata,
-                                  reataRasgadaEnganchada:
-                                      reataRasgadaEnganchada,
-                                  tipoRemateInadecuado: tipoRemateInadecuado,
-                                  telaEspumaSalidaReata: telaEspumaSalidaReata,
-                                  tapaDescuadrada: tapaDescuadrada,
-                                  telaRasgada: telaRasgada,
-                                  ninguno: ninguno,
-                                  otros: otros,
-                                  intTotal: intTotal,
-                                  presenciaHiloSuelto: presenciaHiloSuelto,
-                                  planAccion: planAccion,
-                                  observacion: observacion,
-                                  id: "0",
-                                  codigo: codigo,
-                                  lote: Lote(id: loteId, codigo: codigo,modelo: "modelo"),
-                                  usuario: Usuario(id: "0", nombre: "0"),
-                                  img: imageUrls,
-                                  fechaIngreso: DateTime.now(),
-                                  medidas: medida),otroTexto);
+                              await colchonesProvider.newColchon(
+                                  Colchones(
+                                      estado: true,
+                                      bordeTapaOndulado: bordeTapaOndulado,
+                                      esquinaColSobresalida:
+                                          esquinaColSobresalida,
+                                      esquinaTapaMalformada:
+                                          esquinaTapaMalformada,
+                                      hiloSueltoReata: hiloSueltoReata,
+                                      hiloSueltoRemate: hiloSueltoRemate,
+                                      hiloSueltoAlcochado: hiloSueltoAlcochado,
+                                      hiloSueltoInterior: hiloSueltoInterior,
+                                      puntaSaltadaReata: puntaSaltadaReata,
+                                      reataRasgadaEnganchada:
+                                          reataRasgadaEnganchada,
+                                      tipoRemateInadecuado:
+                                          tipoRemateInadecuado,
+                                      telaEspumaSalidaReata:
+                                          telaEspumaSalidaReata,
+                                      tapaDescuadrada: tapaDescuadrada,
+                                      telaRasgada: telaRasgada,
+                                      ninguno: ninguno,
+                                      otros: otros,
+                                      intTotal: intTotal,
+                                      presenciaHiloSuelto: presenciaHiloSuelto,
+                                      planAccion: planAccion,
+                                      observacion: observacion,
+                                      id: "0",
+                                      codigo: codigo,
+                                      lote: Lote(
+                                          id: loteId,
+                                          codigo: codigo,
+                                          modelo: "modelo"),
+                                      usuario: Usuario(id: "0", nombre: "0"),
+                                      img: imageUrls,
+                                      fechaIngreso: DateTime.now(),
+                                      medidas: medida),
+                                  otroTexto);
                               NotificationsService.showSnackbar('Creado!');
                             } else {
                               // Actualizar
@@ -572,7 +722,7 @@ class _ColchonModalState extends State<ColchonModal> {
   BoxDecoration buildBoxDecoration() => BoxDecoration(
       borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-      color: Color(0xff0F2041),
+      color: Colors.white,
       boxShadow: [BoxShadow(color: Colors.black26)]);
   Future<List<html.File>> pickImagesFromLibrary() async {
     final input = html.FileUploadInputElement()..accept = 'image/*';
