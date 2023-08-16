@@ -737,13 +737,17 @@ class _SendEmailViewState extends State<SendEmailView> {
     _barChartKey1 = GlobalKey();
     _barChartKey2 = GlobalKey();
 
-    Provider.of<CategoriesProvider>(context, listen: false).getLotes();
-    Provider.of<ColchonesProvider>(context, listen: false).getColchones();
-    Provider.of<ColchonesProvider>(context, listen: false).getModeloColchones();
+    _getAllData();
   }
 
   TextEditingController _fechaController = TextEditingController();
   TextEditingController _fechaController2 = TextEditingController();
+
+  Future<void> _getAllData() async {
+    Provider.of<CategoriesProvider>(context, listen: false).getLotes();
+    Provider.of<ColchonesProvider>(context, listen: false).getColchones();
+    Provider.of<ColchonesProvider>(context, listen: false).getModeloColchones();
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     DateTime? picked = await showDatePicker(
@@ -807,11 +811,13 @@ class _SendEmailViewState extends State<SendEmailView> {
     // Verificar si el texto del controlador de fecha de inicio es válido
     if (fechaInicioText.isNotEmpty) {
       fechaInicio = DateTime.tryParse(fechaInicioText)!;
+      print(fechaInicio);
     }
 
     // Verificar si el texto del controlador de fecha de fin es válido
     if (fechaFinText.isNotEmpty) {
       fechaFin = DateTime.tryParse(fechaFinText)!;
+      print(fechaFin);
     }
 
     // Verificar si ambas fechas son válidas antes de aplicar el filtro
@@ -1169,6 +1175,15 @@ class _SendEmailViewState extends State<SendEmailView> {
                                 }).toList(),
                                 onChanged: (value) {
                                   setState(() {
+                                    print('cambio el filtro');
+                                    filtro = "";
+                                    _fechaController.text = "";
+                                    _fechaController2.text = "";
+                                    fechaInicio = null;
+                                    fechaFin = null;
+                                    colchones.clear();
+                                    lotes.clear();
+                                    _getAllData();
                                     selectedFiltro = value.toString();
                                   });
                                 },

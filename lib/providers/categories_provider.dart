@@ -8,7 +8,6 @@ import 'package:admin_dashboard/models/category.dart';
 import 'package:admin_dashboard/models/http/categories_response.dart';
 
 class CategoriesProvider extends ChangeNotifier {
-
   List<Categoria> categorias = [];
   List<Lotes> lotes = [];
 
@@ -18,22 +17,23 @@ class CategoriesProvider extends ChangeNotifier {
 
     this.categorias = [...categoriesResp.categorias];
 
-    print( this.categorias );
+    //print(this.categorias);
 
     notifyListeners();
   }
+
   getLotes() async {
     final resp2 = await CafeApi.httpGet('/lotes');
     final lotesResp = LotesResponse.fromMap(resp2);
 
     this.lotes = [...lotesResp.lotes];
-    
-    print( this.lotes );
+
+    //print(this.lotes);
 
     notifyListeners();
   }
 
-    Future<void> getLotesFiltro(String filtro) async {
+  Future<void> getLotesFiltro(String filtro) async {
     final resp2 = await CafeApi.httpGet('/lotes');
     final lotesResp = LotesResponse.fromMap(resp2);
 
@@ -50,88 +50,70 @@ class CategoriesProvider extends ChangeNotifier {
       }).toList();
     }
 
-
     notifyListeners();
   }
 
-
-    Future newLote( String name,String codigo,String modelo,bool estado,int stock ) async {
-
+  Future newLote(
+      String name, String codigo, String modelo, bool estado, int stock) async {
     final data = {
       'nombre': name,
       "codigo": codigo,
       "modelo": modelo,
-      "stock":stock,
+      "stock": stock,
     };
 
     try {
-
-      final json = await CafeApi.post('/lotes', data );
-      print(json);
+      final json = await CafeApi.post('/lotes', data);
+      //print(json);
       final newLote = Lotes.fromMap(json);
 
-      print(newLote);
-      lotes.add( newLote );
+      //print(newLote);
+      lotes.add(newLote);
       notifyListeners();
-      
     } catch (e) {
       throw 'Error al crear lotes';
     }
-
   }
-Future updateLotes( String id,  String name,String codigo,String modelo,bool estado,int stock ) async {
 
-     final data = {
+  Future updateLotes(String id, String name, String codigo, String modelo,
+      bool estado, int stock) async {
+    final data = {
       'nombre': name,
       "codigo": codigo,
       "modelo": modelo,
-      "stock":stock,
-      "estadoRevision":estado,
+      "stock": stock,
+      "estadoRevision": estado,
     };
 
     try {
+      await CafeApi.put('/lotes/$id', data);
 
-      await CafeApi.put('/lotes/$id', data );
-    
-      this.lotes = this.lotes.map(
-        (lotes) {
-          if ( lotes.id != id ) return lotes;
-          lotes.nombre = name;
-          lotes.codigo = codigo;
-          lotes.modelo = modelo;
-          lotes.stock = stock;
-          lotes.estadoRevision = estado;
-          return lotes;
-        }
-      ).toList();
-      
+      this.lotes = this.lotes.map((lotes) {
+        if (lotes.id != id) return lotes;
+        lotes.nombre = name;
+        lotes.codigo = codigo;
+        lotes.modelo = modelo;
+        lotes.stock = stock;
+        lotes.estadoRevision = estado;
+        return lotes;
+      }).toList();
+
       notifyListeners();
-      
     } catch (e) {
       throw 'Error al crear lote';
     }
-
   }
 
-
-
-
-    Future deleteLote( String id ) async {
-
+  Future deleteLote(String id) async {
     try {
+      await CafeApi.delete('/lotes/$id', {});
 
-      await CafeApi.delete('/lotes/$id', {} );
-    
-      lotes.removeWhere((lotes) => lotes.id == id );
-     
+      lotes.removeWhere((lotes) => lotes.id == id);
+
       notifyListeners();
-      
-      
     } catch (e) {
       print(e);
       print('Error al eliminar lote');
     }
-
   }
-
 }

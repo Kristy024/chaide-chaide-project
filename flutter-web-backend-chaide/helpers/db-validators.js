@@ -12,9 +12,9 @@ const esRoleValido = async(rol = 'SUPERVISOR_ROLE') => {
 const emailExiste = async( correo = '' ) => {
 
     // Verificar si el correo existe
-    const existeEmail = await Usuario.findOne({ correo });
+    const existeEmail = await Usuario.findOne({ correo, estado:true });
     if ( existeEmail ) {
-        throw new Error(`El correo: ${ correo }, ya está registrado`);
+        throw new Error(`El correo: ${ correo}, ya está registrado`);
     }
 }
 
