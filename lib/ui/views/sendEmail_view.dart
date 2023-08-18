@@ -4,6 +4,7 @@ import 'dart:js_interop';
 
 import 'package:admin_dashboard/models/colchones.dart';
 import 'package:admin_dashboard/models/lotes.dart';
+import 'package:admin_dashboard/services/notifications_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -27,6 +28,9 @@ import 'package:universal_html/html.dart' as html;
 
 import '../buttons/custom_outlined_button.dart';
 import '../inputs/custom_inputs.dart';
+
+DateTime? fechaInicio;
+DateTime? fechaFin;
 
 // Define the ChartData class
 Future<void> generateAndDownloadPdf(
@@ -757,7 +761,18 @@ class _SendEmailViewState extends State<SendEmailView> {
       lastDate: DateTime(2030),
     );
 
+    DateTime now = DateTime.now();
     if (picked != null) {
+      if (fechaFin.isDefinedAndNotNull && picked.isAfter(fechaFin!)) {
+        NotificationsService.showSnackbarError(
+            'La fecha inicial no puede ser depués a la fecha final.');
+        return;
+      }
+      if (picked.isAfter(now)) {
+        NotificationsService.showSnackbarError(
+            'La fecha no puede ser depués a la de hoy.');
+        return;
+      }
       _fechaController.text = picked.toLocal().toString().split(' ')[0];
 
       setState(() {});
@@ -772,7 +787,24 @@ class _SendEmailViewState extends State<SendEmailView> {
       lastDate: DateTime(2030),
     );
 
+    DateTime now = DateTime.now();
+    if (!fechaInicio.isDefinedAndNotNull) {
+      NotificationsService.showSnackbarError(
+          'No ha seleccionado la fecha inicial.');
+      return;
+    }
     if (picked != null) {
+      if (picked.isAfter(now)) {
+        NotificationsService.showSnackbarError(
+            'La fecha no puede ser depués a la de hoy.');
+        return;
+      }
+
+      if (fechaInicio.isDefinedAndNotNull && picked.isBefore(fechaInicio!)) {
+        NotificationsService.showSnackbarError(
+            'La fecha final no puede ser antes de la fecha de inicio.');
+        return;
+      }
       _fechaController2.text = picked.toLocal().toString().split(' ')[0];
 
       setState(() {});
@@ -805,19 +837,14 @@ class _SendEmailViewState extends State<SendEmailView> {
     String fechaInicioText = _fechaController.text;
     String fechaFinText = _fechaController2.text;
 
-    DateTime? fechaInicio;
-    DateTime? fechaFin;
-
     // Verificar si el texto del controlador de fecha de inicio es válido
     if (fechaInicioText.isNotEmpty) {
       fechaInicio = DateTime.tryParse(fechaInicioText)!;
-      print(fechaInicio);
     }
 
     // Verificar si el texto del controlador de fecha de fin es válido
     if (fechaFinText.isNotEmpty) {
       fechaFin = DateTime.tryParse(fechaFinText)!;
-      print(fechaFin);
     }
 
     // Verificar si ambas fechas son válidas antes de aplicar el filtro
@@ -1178,7 +1205,7 @@ class _SendEmailViewState extends State<SendEmailView> {
                                     print('cambio el filtro');
                                     filtro = "";
                                     _fechaController.text = "";
-                                    _fechaController2.text = "";  
+                                    _fechaController2.text = "";
                                     fechaInicio = null;
                                     fechaFin = null;
                                     colchones.clear();

@@ -101,17 +101,17 @@ const ColchonesSchema = Schema({
         default: false,
         required: true
     },
-    texto_otro:{
-        type:String,
-        default:'',
+    texto_otro: {
+        type: String,
+        default: '',
     },
     intTotal: {
         type: Number,
         default: 0
     },
-    medidas:{
-        type:String,
-        required:true
+    medidas: {
+        type: String,
+        required: true
     },
     presenciaHiloSuelto: {
         type: Boolean,
@@ -126,45 +126,45 @@ const ColchonesSchema = Schema({
         default: ''
     },
     img: {
-        type: [String], 
+        type: [String],
         default: []
-      }
-      
+    }
 
-   
+
+
 });
 
 
-ColchonesSchema.methods.toJSON = function() {
-    const { __v, ...data  } = this.toObject();
+ColchonesSchema.methods.toJSON = function () {
+    const { __v, ...data } = this.toObject();
     return data;
 }
 
-ColchonesSchema.pre('save', function(next) {
+ColchonesSchema.pre('save', function (next) {
     // Obtener los campos booleanos que se deben contar
     const booleanFields = [
-      this.bordeTapaOndulado,
-      this.esquinaColSobresalida,
-      this.esquinaTapaMalformada,
-      this.hiloSueltoReata,
-      this.hiloSueltoRemate,
-      this.hiloSueltoAlcochado,
-      this.hiloSueltoInterior,
-      this.puntaSaltadaReata,
-      this.reataRasgadaEnganchada,
-      this.tipoRemateInadecuado,
-      this.telaEspumaSalidaReata,
-      this.tapaDescuadrada,
-      this.telaRasgada,
-      this.ninguno,
-      this.otros,
-      this.presenciaHiloSuelto
+        this.bordeTapaOndulado,
+        this.esquinaColSobresalida,
+        this.esquinaTapaMalformada,
+        this.hiloSueltoReata,
+        this.hiloSueltoRemate,
+        this.hiloSueltoAlcochado,
+        this.hiloSueltoInterior,
+        this.puntaSaltadaReata,
+        this.reataRasgadaEnganchada,
+        this.tipoRemateInadecuado,
+        this.telaEspumaSalidaReata,
+        this.tapaDescuadrada,
+        this.telaRasgada,
+        this.ninguno,
+        this.otros,
+        this.presenciaHiloSuelto
     ];
-  
+
     // Calcular el total de booleanos verdaderos
     const booleanosVerdaderos = booleanFields.filter(Boolean);
     this.intTotal = booleanosVerdaderos.length;
-  
+
     next();
-  });
-module.exports = model( 'Colchones', ColchonesSchema );
+});
+module.exports = model('Colchones', ColchonesSchema);
