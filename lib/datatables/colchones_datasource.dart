@@ -4,7 +4,6 @@ import 'package:admin_dashboard/providers/colchones_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/lotes.dart';
 import '../services/navigation_service.dart';
 
 class ColchonesDTS extends DataTableSource {

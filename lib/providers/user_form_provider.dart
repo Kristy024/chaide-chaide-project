@@ -5,7 +5,6 @@ import 'package:admin_dashboard/models/usuario.dart';
 import 'package:flutter/material.dart';
 
 class UserFormProvider extends ChangeNotifier {
-
   Usuario? user;
   late GlobalKey<FormState> formKey;
 
@@ -33,54 +32,39 @@ class UserFormProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
-
   bool _validForm() {
     return formKey.currentState!.validate();
   }
 
   Future updateUser() async {
+    if (!this._validForm()) return false;
 
-    if ( !this._validForm() ) return false;
-
-       
     final data = {
       'nombre': user!.nombre,
       'correo': user!.correo,
-      'rol':user!.rol,
+      'rol': user!.rol,
     };
 
     try {
-      
-      final resp = await CafeApi.put('/usuarios/${ user!.uid }', data);
-
+      final resp = await CafeApi.put('/usuarios/${user!.uid}', data);
+      print(resp);
       return true;
-
     } catch (e) {
       print('error en updateUser: $e');
       return false;
     }
-
-
   }
 
-
-  Future<Usuario> uploadImage( String path, Uint8List bytes ) async {
-
+  Future<Usuario> uploadImage(String path, Uint8List bytes) async {
     try {
-      
       final resp = await CafeApi.uploadFile(path, bytes);
       user = Usuario.fromMap(resp);
       notifyListeners();
 
       return user!;
-
     } catch (e) {
       print(e);
       throw 'Error en user from provider provider';
     }
-
   }
-
-
 }

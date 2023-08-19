@@ -50,7 +50,6 @@ class _ColchonViewState extends State<ColchonView> {
 
   @override
   Widget build(BuildContext context) {
-    final colchones = Provider.of<ColchonesProvider>(context).colchones;
     final Colchones colchon2 = colchon ??
         Colchones(
             estado: true,

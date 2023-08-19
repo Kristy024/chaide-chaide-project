@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_web_libraries_in_flutter
 
+import 'dart:io';
 import 'dart:js_interop';
 
 import 'package:admin_dashboard/models/colchones.dart';
@@ -29,8 +30,17 @@ import 'package:universal_html/html.dart' as html;
 import '../buttons/custom_outlined_button.dart';
 import '../inputs/custom_inputs.dart';
 
+//import 'package:excel/excel.dart';
+
+import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xcel;
+
 DateTime? fechaInicio;
 DateTime? fechaFin;
+
+late GlobalKey _barChartKey1;
+late GlobalKey _barChartKey2;
+
+List<Uint8List> charts = [];
 
 // Define the ChartData class
 Future<void> generateAndDownloadPdf(
@@ -40,23 +50,6 @@ Future<void> generateAndDownloadPdf(
   String tipoFiltro,
   List<Colchones> colchones,
   List<Uint8List> charts,
-  int totalGeneral,
-  int contadorBordeTapaOndulado,
-  int contadorEsquinaColSobreSalida,
-  int contadorEsquinaTapaMalformada,
-  int contadorHiloSueltoReata,
-  int contadorHiloSueltoRemate,
-  int contadorHiloSueltoAlcochado,
-  int contadorHiloSueltoInterior,
-  int contadorPuntaSaltadaReata,
-  int contadorReataRasgadaEnganchada,
-  int contadorTipoRemateInadecuado,
-  int contadorTelaEspumaSalidaReata,
-  int contadorTapaDescuadrada,
-  int contadorTelaRasgada,
-  int contadorNinguno,
-  int contadorOtros,
-  int contadorPresenciaHiloSuelto,
 ) async {
   final pdf = pw.Document();
   // Obtener los datos para el gráfico
@@ -95,6 +88,7 @@ Future<void> generateAndDownloadPdf(
     if (colchon.otros) contadorOtros++;
     if (colchon.presenciaHiloSuelto) contadorPresenciaHiloSuelto++;
   }
+
   String role = rol;
   if (rol == "ADMIN_ROLE") {
     role = "Administrador";
@@ -103,6 +97,7 @@ Future<void> generateAndDownloadPdf(
   } else if (rol == "OPERADOR_ROLE") {
     role = "Operador";
   }
+
   // Calcular el total general
   int totalGeneral = contadorBordeTapaOndulado +
       contadorEsquinaColSobreSalida +
@@ -133,13 +128,141 @@ Future<void> generateAndDownloadPdf(
   //final pdfImageLeft = pw.MemoryImage(imageLeftBytes);
   final pdfImageCenter = pw.MemoryImage(imageCenterBytes);
   final ahora = DateTime.now();
-  final formatoFecha = DateFormat(
-      'dd/MM/yyyy HH:mm'); // Cambia el formato de fecha según tus preferencias
+  final formatoFecha = DateFormat('dd-MM-yyyy HH:mm');
+  // Cambia el formato de fecha según tus preferencias
 
   // ... Resto del código
 
   // final pdfImageRight = pw.MemoryImage(imageRightBytes);
   // Crear la tabla de permisos
+  final inicialTable = pw.Table(
+    border: pw.TableBorder.all(),
+    children: [
+      pw.TableRow(
+        children: [
+          pw.Container(
+            alignment: pw.Alignment.center,
+            child: pw.Text('Reporte General de Fallos',
+                style: pw.TextStyle(
+                    fontSize: 16,
+                    fontWeight: pw.FontWeight
+                        .bold)), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
+          ),
+        ],
+      ),
+      pw.TableRow(
+        children: [
+          pw.Container(
+            alignment: pw.Alignment.center,
+            child: pw.Image(pdfImageCenter,
+                width: 250,
+                height:
+                    150), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
+          ),
+        ],
+      ),
+    ],
+  );
+  final datosReporteTable = pw.Table(
+    border: pw.TableBorder.all(),
+    children: [
+      pw.TableRow(
+        children: [
+          pw.Container(
+            alignment: pw.Alignment.center,
+            child: pw.Text('Nombre:',
+                style: pw.TextStyle(
+                    fontSize: 12,
+                    fontWeight: pw.FontWeight
+                        .bold)), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
+          ),
+          pw.Container(
+            alignment: pw.Alignment.center,
+            child: pw.Text('$nameUser',
+                style: pw.TextStyle(
+                  fontSize: 12,
+                )), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
+          ),
+        ],
+      ),
+      pw.TableRow(
+        children: [
+          pw.Container(
+            alignment: pw.Alignment.center,
+            child: pw.Text('Rol:',
+                style: pw.TextStyle(
+                    fontSize: 12,
+                    fontWeight: pw.FontWeight
+                        .bold)), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
+          ),
+          pw.Container(
+            alignment: pw.Alignment.center,
+            child: pw.Text('$role',
+                style: pw.TextStyle(
+                  fontSize: 12,
+                )), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
+          ),
+        ],
+      ),
+      pw.TableRow(
+        children: [
+          pw.Container(
+            alignment: pw.Alignment.center,
+            child: pw.Text(
+              'Fecha:',
+              style: pw.TextStyle(
+                fontSize: 12,
+                fontWeight: pw.FontWeight.bold,
+              ),
+            ), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
+          ),
+          pw.Container(
+            alignment: pw.Alignment.center,
+            child: pw.Text(formatoFecha.format(ahora),
+                style: pw.TextStyle(fontSize: 12)),
+          ),
+        ],
+      ),
+      pw.TableRow(
+        children: [
+          pw.Container(
+            alignment: pw.Alignment.center,
+            child: pw.Text('Tipo de filtro:',
+                style: pw.TextStyle(
+                    fontSize: 12,
+                    fontWeight: pw.FontWeight
+                        .bold)), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
+          ),
+          pw.Container(
+            alignment: pw.Alignment.center,
+            child: pw.Text('$tipoFiltro',
+                style: pw.TextStyle(
+                  fontSize: 12,
+                )), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
+          ),
+        ],
+      ),
+      pw.TableRow(
+        children: [
+          pw.Container(
+            alignment: pw.Alignment.center,
+            child: pw.Text('Comentario:',
+                style: pw.TextStyle(
+                    fontSize: 12,
+                    fontWeight: pw.FontWeight
+                        .bold)), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
+          ),
+          pw.Container(
+            alignment: pw.Alignment.center,
+            child: pw.Text('$comentario',
+                style: pw.TextStyle(
+                  fontSize: 12,
+                )), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
+          ),
+        ],
+      ),
+    ],
+  );
   final colchonesTable = pw.Table(
     border: pw.TableBorder.all(),
     children: [
@@ -270,6 +393,15 @@ Future<void> generateAndDownloadPdf(
       ),
       pw.TableRow(
         children: [
+          pw.Text('Presencia Hilo Suelto',
+              style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold)),
+          ...colchones.map((colchon) => pw.Text(
+              colchon.presenciaHiloSuelto ? 'Sí' : 'No',
+              style: pw.TextStyle(fontSize: 8))),
+        ],
+      ),
+      pw.TableRow(
+        children: [
           pw.Text('Ninguno',
               style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold)),
           ...colchones.map((colchon) => pw.Text(colchon.ninguno ? 'Sí' : 'No',
@@ -281,15 +413,6 @@ Future<void> generateAndDownloadPdf(
           pw.Text('Otros',
               style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold)),
           ...colchones.map((colchon) => pw.Text(colchon.otros ? 'Sí' : 'No',
-              style: pw.TextStyle(fontSize: 8))),
-        ],
-      ),
-      pw.TableRow(
-        children: [
-          pw.Text('Presencia Hilo Suelto',
-              style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold)),
-          ...colchones.map((colchon) => pw.Text(
-              colchon.presenciaHiloSuelto ? 'Sí' : 'No',
               style: pw.TextStyle(fontSize: 8))),
         ],
       ),
@@ -338,132 +461,6 @@ Future<void> generateAndDownloadPdf(
                   fontSize: 8,
                 )),
           ])),
-    ],
-  );
-  final inicialTable = pw.Table(
-    border: pw.TableBorder.all(),
-    children: [
-      pw.TableRow(
-        children: [
-          pw.Container(
-            alignment: pw.Alignment.center,
-            child: pw.Text('Reporte General de Fallos',
-                style: pw.TextStyle(
-                    fontSize: 16,
-                    fontWeight: pw.FontWeight
-                        .bold)), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
-          ),
-        ],
-      ),
-      pw.TableRow(
-        children: [
-          pw.Container(
-            alignment: pw.Alignment.center,
-            child: pw.Image(pdfImageCenter,
-                width: 250,
-                height:
-                    150), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
-          ),
-        ],
-      ),
-    ],
-  );
-  final datosReporteTable = pw.Table(
-    border: pw.TableBorder.all(),
-    children: [
-      pw.TableRow(
-        children: [
-          pw.Container(
-            alignment: pw.Alignment.center,
-            child: pw.Text('Nombre:',
-                style: pw.TextStyle(
-                    fontSize: 12,
-                    fontWeight: pw.FontWeight
-                        .bold)), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
-          ),
-          pw.Container(
-            alignment: pw.Alignment.center,
-            child: pw.Text('$nameUser',
-                style: pw.TextStyle(
-                  fontSize: 12,
-                )), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
-          ),
-        ],
-      ),
-      pw.TableRow(
-        children: [
-          pw.Container(
-            alignment: pw.Alignment.center,
-            child: pw.Text('Rol:',
-                style: pw.TextStyle(
-                    fontSize: 12,
-                    fontWeight: pw.FontWeight
-                        .bold)), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
-          ),
-          pw.Container(
-            alignment: pw.Alignment.center,
-            child: pw.Text('$role',
-                style: pw.TextStyle(
-                  fontSize: 12,
-                )), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
-          ),
-        ],
-      ),
-      pw.TableRow(
-        children: [
-          pw.Container(
-            alignment: pw.Alignment.center,
-            child: pw.Text('Fecha:',
-                style: pw.TextStyle(
-                    fontSize: 12,
-                    fontWeight: pw.FontWeight
-                        .bold)), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
-          ),
-          pw.Container(
-            alignment: pw.Alignment.center,
-            child: pw.Text(formatoFecha.format(ahora),
-                style: pw.TextStyle(fontSize: 12)),
-          ),
-        ],
-      ),
-      pw.TableRow(
-        children: [
-          pw.Container(
-            alignment: pw.Alignment.center,
-            child: pw.Text('Tipo de filtro:',
-                style: pw.TextStyle(
-                    fontSize: 12,
-                    fontWeight: pw.FontWeight
-                        .bold)), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
-          ),
-          pw.Container(
-            alignment: pw.Alignment.center,
-            child: pw.Text('$tipoFiltro',
-                style: pw.TextStyle(
-                  fontSize: 12,
-                )), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
-          ),
-        ],
-      ),
-      pw.TableRow(
-        children: [
-          pw.Container(
-            alignment: pw.Alignment.center,
-            child: pw.Text('Comentario:',
-                style: pw.TextStyle(
-                    fontSize: 12,
-                    fontWeight: pw.FontWeight
-                        .bold)), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
-          ),
-          pw.Container(
-            alignment: pw.Alignment.center,
-            child: pw.Text('$comentario',
-                style: pw.TextStyle(
-                  fontSize: 12,
-                )), // Reemplaza 'yourLogoImageProvider' con la fuente de la imagen de tu logo
-          ),
-        ],
-      ),
     ],
   );
   final contadoresTable = pw.Table(
@@ -663,9 +660,10 @@ Future<void> generateAndDownloadPdf(
                 pw.SizedBox(height: 10),
                 colchonesTable,
                 pw.SizedBox(height: 20),
-                pw.Text('Grafico de fallos',
-                    style: pw.TextStyle(
-                        fontSize: 18, fontWeight: pw.FontWeight.bold)),
+                if (images.iterator.moveNext())
+                  pw.Text('Grafico de fallos',
+                      style: pw.TextStyle(
+                          fontSize: 18, fontWeight: pw.FontWeight.bold)),
                 if (images.iterator.moveNext()) pw.Image(images[0]),
                 pw.SizedBox(height: 20),
                 pw.Text('Total Registrado de Fallos en Colchones',
@@ -688,12 +686,6 @@ Future<void> generateAndDownloadPdf(
     ),
   );
 
-/*   pdf.addPage(pw.Page(build: (pw.Context context) {
-    return pw.Center(
-      child: pw.Image(image1),
-    ); // Center
-  }));  */ // Page
-
   final Uint8List bytes = await pdf.save();
 
   // Descargar el archivo PDF
@@ -702,13 +694,255 @@ Future<void> generateAndDownloadPdf(
   final anchor = html.document.createElement('a') as html.AnchorElement
     ..href = url
     ..style.display = 'none'
-    ..download = 'InformeGeneral.pdf';
+    ..download = 'InformeGeneral-' +
+        tipoFiltro +
+        '-' +
+        formatoFecha.format(ahora) +
+        '.pdf';
 
   html.document.body?.children.add(anchor);
   anchor.click();
 
   html.document.body?.children.remove(anchor);
   html.Url.revokeObjectUrl(url);
+}
+
+Future<void> generateAndDownloadXLSX(
+    List<Colchones> colchones, String tipoFiltro) async {
+  // Obtener los datos para el gráfico
+  int contadorBordeTapaOndulado = 0;
+  int contadorEsquinaColSobreSalida = 0;
+  int contadorEsquinaTapaMalformada = 0;
+  int contadorHiloSueltoReata = 0;
+  int contadorHiloSueltoRemate = 0;
+  int contadorHiloSueltoAlcochado = 0;
+  int contadorHiloSueltoInterior = 0;
+  int contadorPuntaSaltadaReata = 0;
+  int contadorReataRasgadaEnganchada = 0;
+  int contadorTipoRemateInadecuado = 0;
+  int contadorTelaEspumaSalidaReata = 0;
+  int contadorTapaDescuadrada = 0;
+  int contadorTelaRasgada = 0;
+  int contadorNinguno = 0;
+  int contadorOtros = 0;
+  int contadorPresenciaHiloSuelto = 0;
+
+  for (var colchon in colchones) {
+    if (colchon.bordeTapaOndulado) contadorBordeTapaOndulado++;
+    if (colchon.esquinaColSobresalida) contadorEsquinaColSobreSalida++;
+    if (colchon.esquinaTapaMalformada) contadorEsquinaTapaMalformada++;
+    if (colchon.hiloSueltoReata) contadorHiloSueltoReata++;
+    if (colchon.hiloSueltoRemate) contadorHiloSueltoRemate++;
+    if (colchon.hiloSueltoAlcochado) contadorHiloSueltoAlcochado++;
+    if (colchon.hiloSueltoInterior) contadorHiloSueltoInterior++;
+    if (colchon.puntaSaltadaReata) contadorPuntaSaltadaReata++;
+    if (colchon.reataRasgadaEnganchada) contadorReataRasgadaEnganchada++;
+    if (colchon.tipoRemateInadecuado) contadorTipoRemateInadecuado++;
+    if (colchon.telaEspumaSalidaReata) contadorTelaEspumaSalidaReata++;
+    if (colchon.tapaDescuadrada) contadorTapaDescuadrada++;
+    if (colchon.telaRasgada) contadorTelaRasgada++;
+    if (colchon.ninguno) contadorNinguno++;
+    if (colchon.otros) contadorOtros++;
+    if (colchon.presenciaHiloSuelto) contadorPresenciaHiloSuelto++;
+  }
+
+  // Calcular el total general
+  int totalGeneral = contadorBordeTapaOndulado +
+      contadorEsquinaColSobreSalida +
+      contadorEsquinaTapaMalformada +
+      contadorHiloSueltoReata +
+      contadorHiloSueltoRemate +
+      contadorHiloSueltoAlcochado +
+      contadorHiloSueltoInterior +
+      contadorPuntaSaltadaReata +
+      contadorReataRasgadaEnganchada +
+      contadorTipoRemateInadecuado +
+      contadorTelaEspumaSalidaReata +
+      contadorTapaDescuadrada +
+      contadorTelaRasgada +
+      contadorNinguno +
+      contadorOtros +
+      contadorPresenciaHiloSuelto;
+
+  final xcel.Workbook workbook = xcel.Workbook(3);
+
+  final xcel.Worksheet sheet = workbook.worksheets[0];
+  sheet.name = "Tabla de Colchones";
+
+  sheet.getRangeByIndex(1, 1).setText('Modelo');
+  sheet.getRangeByIndex(1, 2).setText('Borde Tapa Ondulado');
+  sheet.getRangeByIndex(1, 3).setText('Código de colchon');
+  sheet.getRangeByIndex(1, 4).setText('Total de Fallos');
+  sheet.getRangeByIndex(1, 5).setText('Medidas');
+  sheet.getRangeByIndex(1, 6).setText('Observación');
+
+  for (var x = 0; x < colchones.length; x++) {
+    sheet.getRangeByIndex(x + 2, 1).setText(colchones[x].lote.modelo);
+    sheet.getRangeByIndex(x + 2, 2).setText(colchones[x].lote.codigo);
+    sheet.getRangeByIndex(x + 2, 3).setText(colchones[x].codigo);
+    sheet.getRangeByIndex(x + 2, 4).setValue(colchones[x].intTotal);
+    sheet.getRangeByIndex(x + 2, 5).setText(colchones[x].medidas);
+    sheet.getRangeByIndex(x + 2, 6).setText(colchones[x].observacion);
+  }
+
+  final xcel.Worksheet sheet2 = workbook.worksheets[1];
+  sheet2.name = "Tabla de Fallos";
+
+  sheet2.getRangeByIndex(1, 1).setText('Lote Código');
+  sheet2.getRangeByIndex(2, 1).setText('Borde Tapa Ondulad');
+  sheet2.getRangeByIndex(3, 1).setText('Esquina Col Sobresalida');
+  sheet2.getRangeByIndex(4, 1).setText('Esquina Tapa Malformada');
+  sheet2.getRangeByIndex(5, 1).setText('Hilo Suelto Reata');
+  sheet2.getRangeByIndex(6, 1).setText('Hilo Suelto Remate');
+  sheet2.getRangeByIndex(7, 1).setText('Hilo Suelto Alcochado');
+  sheet2.getRangeByIndex(8, 1).setText('Hilo Suelto Interior');
+  sheet2.getRangeByIndex(9, 1).setText('Punta Saltada Reata');
+  sheet2.getRangeByIndex(10, 1).setText('Reata Rasgada Enganchada');
+  sheet2.getRangeByIndex(11, 1).setText('Tipo Remate Inadecuado');
+  sheet2.getRangeByIndex(12, 1).setText('Tela Espuma Salida Reata');
+  sheet2.getRangeByIndex(13, 1).setText('Tapa Descuadrada');
+  sheet2.getRangeByIndex(14, 1).setText('Tela Rasgada');
+  sheet2.getRangeByIndex(15, 1).setText('Presencia Hilo Suelto');
+  sheet2.getRangeByIndex(16, 1).setText('Ninguno');
+  sheet2.getRangeByIndex(17, 1).setText('Otros');
+
+  for (var x = 0; x < colchones.length; x++) {
+    sheet2.getRangeByIndex(1, x + 2).setText(colchones[x].codigo);
+    sheet2
+        .getRangeByIndex(2, x + 2)
+        .setText(colchones[x].bordeTapaOndulado ? 'Sí' : 'No');
+    sheet2
+        .getRangeByIndex(3, x + 2)
+        .setText(colchones[x].esquinaColSobresalida ? 'Sí' : 'No');
+    sheet2
+        .getRangeByIndex(4, x + 2)
+        .setText(colchones[x].esquinaTapaMalformada ? 'Sí' : 'No');
+    sheet2
+        .getRangeByIndex(5, x + 2)
+        .setText(colchones[x].hiloSueltoReata ? 'Sí' : 'No');
+    sheet2
+        .getRangeByIndex(6, x + 2)
+        .setText(colchones[x].hiloSueltoRemate ? 'Sí' : 'No');
+    sheet2
+        .getRangeByIndex(7, x + 2)
+        .setText(colchones[x].hiloSueltoAlcochado ? 'Sí' : 'No');
+    sheet2
+        .getRangeByIndex(8, x + 2)
+        .setText(colchones[x].hiloSueltoInterior ? 'Sí' : 'No');
+    sheet2
+        .getRangeByIndex(9, x + 2)
+        .setText(colchones[x].puntaSaltadaReata ? 'Sí' : 'No');
+    sheet2
+        .getRangeByIndex(10, x + 2)
+        .setText(colchones[x].reataRasgadaEnganchada ? 'Sí' : 'No');
+    sheet2
+        .getRangeByIndex(11, x + 2)
+        .setText(colchones[x].tipoRemateInadecuado ? 'Sí' : 'No');
+    sheet2
+        .getRangeByIndex(12, x + 2)
+        .setText(colchones[x].telaEspumaSalidaReata ? 'Sí' : 'No');
+    sheet2
+        .getRangeByIndex(13, x + 2)
+        .setText(colchones[x].tapaDescuadrada ? 'Sí' : 'No');
+    sheet2
+        .getRangeByIndex(14, x + 2)
+        .setText(colchones[x].telaRasgada ? 'Sí' : 'No');
+    sheet2
+        .getRangeByIndex(15, x + 2)
+        .setText(colchones[x].presenciaHiloSuelto ? 'Sí' : 'No');
+    sheet2
+        .getRangeByIndex(16, x + 2)
+        .setText(colchones[x].ninguno ? 'Sí' : 'No');
+    sheet2.getRangeByIndex(17, x + 2).setText(colchones[x].otros ? 'Sí' : 'No');
+  }
+
+  final xcel.Worksheet sheet3 = workbook.worksheets[2];
+  sheet3.name = "TB RGTS Fallos Colchones";
+
+  sheet3.getRangeByIndex(1, 1).setText('Borde Tapa Ondulad');
+  sheet3.getRangeByIndex(2, 1).setText('Esquina Col Sobresalida');
+  sheet3.getRangeByIndex(3, 1).setText('Esquina Tapa Malformada');
+  sheet3.getRangeByIndex(4, 1).setText('Hilo Suelto Reata');
+  sheet3.getRangeByIndex(5, 1).setText('Hilo Suelto Remate');
+  sheet3.getRangeByIndex(6, 1).setText('Hilo Suelto Alcochado');
+  sheet3.getRangeByIndex(7, 1).setText('Hilo Suelto Interior');
+  sheet3.getRangeByIndex(8, 1).setText('Punta Saltada Reata');
+  sheet3.getRangeByIndex(9, 1).setText('Reata Rasgada Enganchada');
+  sheet3.getRangeByIndex(10, 1).setText('Tipo Remate Inadecuado');
+  sheet3.getRangeByIndex(11, 1).setText('Tela Espuma Salida Reata');
+  sheet3.getRangeByIndex(12, 1).setText('Tapa Descuadrada');
+  sheet3.getRangeByIndex(13, 1).setText('Tela Rasgada');
+  sheet3.getRangeByIndex(14, 1).setText('Presencia Hilo Suelto');
+  sheet3.getRangeByIndex(15, 1).setText('Ninguno');
+  sheet3.getRangeByIndex(16, 1).setText('Otros');
+  sheet3.getRangeByIndex(17, 1).setText('Total General');
+
+  sheet3.getRangeByIndex(1, 2).setValue(contadorBordeTapaOndulado);
+  sheet3.getRangeByIndex(2, 2).setValue(contadorEsquinaColSobreSalida);
+  sheet3.getRangeByIndex(3, 2).setValue(contadorEsquinaTapaMalformada);
+  sheet3.getRangeByIndex(4, 2).setValue(contadorHiloSueltoReata);
+  sheet3.getRangeByIndex(5, 2).setValue(contadorHiloSueltoRemate);
+  sheet3.getRangeByIndex(6, 2).setValue(contadorHiloSueltoAlcochado);
+  sheet3.getRangeByIndex(7, 2).setValue(contadorHiloSueltoInterior);
+  sheet3.getRangeByIndex(8, 2).setValue(contadorPuntaSaltadaReata);
+  sheet3.getRangeByIndex(9, 2).setValue(contadorReataRasgadaEnganchada);
+  sheet3.getRangeByIndex(10, 2).setValue(contadorTipoRemateInadecuado);
+  sheet3.getRangeByIndex(11, 2).setValue(contadorTelaEspumaSalidaReata);
+  sheet3.getRangeByIndex(12, 2).setValue(contadorTapaDescuadrada);
+  sheet3.getRangeByIndex(13, 2).setValue(contadorTelaRasgada);
+  sheet3.getRangeByIndex(14, 2).setValue(contadorPresenciaHiloSuelto);
+  sheet3.getRangeByIndex(15, 2).setValue(contadorNinguno);
+  sheet3.getRangeByIndex(16, 2).setValue(contadorOtros);
+  sheet3.getRangeByIndex(17, 2).setValue(totalGeneral);
+
+  final List<int> bytes = workbook.saveAsStream();
+
+  final ahora = DateTime.now();
+  final formatoFecha = DateFormat('dd-MM-yyyy');
+
+  // Descargar el archivo PDF
+  final blob = html.Blob([bytes]);
+  final url = html.Url.createObjectUrlFromBlob(blob);
+  final anchor = html.document.createElement('a') as html.AnchorElement
+    ..href = url
+    ..style.display = 'none'
+    ..download = 'InformeGeneral-' +
+        tipoFiltro +
+        '-' +
+        formatoFecha.format(ahora) +
+        '.xlsx';
+
+  html.document.body?.children.add(anchor);
+  anchor.click();
+
+  html.document.body?.children.remove(anchor);
+  html.Url.revokeObjectUrl(url);
+  //var bytes = excel.save(fileName: 'InformeGeneral.xlsx');
+}
+
+Future<Uint8List?> _readImageData(GlobalKey _barChartKey) async {
+  if (_barChartKey.currentContext != null) {
+    final RenderRepaintBoundary boundary = _barChartKey.currentContext
+        ?.findRenderObject() as RenderRepaintBoundary;
+
+    final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+    final ByteData? bytes =
+        await image.toByteData(format: ui.ImageByteFormat.png);
+    return bytes!.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes);
+  }
+  return null;
+}
+
+Future<void> generateImageFromCharts() async {
+  charts = [];
+  if (_barChartKey1.isDefinedAndNotNull) {
+    final image = await _readImageData(_barChartKey1);
+    if (image != null) charts.add(image);
+  }
+  if (_barChartKey2.isDefinedAndNotNull) {
+    final image = await _readImageData(_barChartKey2);
+    if (image != null) charts.add(image);
+  }
 }
 
 class ChartData {
@@ -732,8 +966,6 @@ class SendEmailView extends StatefulWidget {
 class _SendEmailViewState extends State<SendEmailView> {
   String filtro = "";
   String selectedFiltro = '';
-  late GlobalKey _barChartKey1;
-  late GlobalKey _barChartKey2;
 
   @override
   void initState() {
@@ -809,20 +1041,6 @@ class _SendEmailViewState extends State<SendEmailView> {
 
       setState(() {});
     }
-  }
-
-  Future<Uint8List?> _readImageData(GlobalKey _barChartKey) async {
-    if (_barChartKey.currentContext != null) {
-      final RenderRepaintBoundary boundary = _barChartKey.currentContext
-          ?.findRenderObject() as RenderRepaintBoundary;
-
-      final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-      final ByteData? bytes =
-          await image.toByteData(format: ui.ImageByteFormat.png);
-      return bytes!.buffer
-          .asUint8List(bytes.offsetInBytes, bytes.lengthInBytes);
-    }
-    return null;
   }
 
   @override
@@ -1058,8 +1276,9 @@ class _SendEmailViewState extends State<SendEmailView> {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(color: Colors.grey.shade200)),
+                borderRadius: BorderRadius.circular(5),
+                //border: Border.all(color: Colors.grey.shade200),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1077,6 +1296,7 @@ class _SendEmailViewState extends State<SendEmailView> {
                         ),
                         OutlinedButton.icon(
                           onPressed: () async {
+                            generateImageFromCharts();
                             await showDialog(
                               context: context,
                               builder: (BuildContext context) {
@@ -1105,46 +1325,13 @@ class _SendEmailViewState extends State<SendEmailView> {
                                         String comentario = _controller
                                             .text; // Obtener el valor del campo de texto
                                         if (comentario.isNotEmpty) {
-                                          List<Uint8List> charts = [];
-                                          if (_barChartKey1
-                                              .isDefinedAndNotNull) {
-                                            final image = await _readImageData(
-                                                _barChartKey1);
-                                            if (image != null)
-                                              charts.add(image);
-                                          }
-                                          if (_barChartKey2
-                                              .isDefinedAndNotNull) {
-                                            final image = await _readImageData(
-                                                _barChartKey2);
-                                            if (image != null)
-                                              charts.add(image);
-                                          }
-
                                           generateAndDownloadPdf(
                                               user.nombre,
                                               user.rol,
                                               comentario,
                                               selectedFiltro,
                                               colchones,
-                                              charts,
-                                              totalGeneral,
-                                              contadorBordeTapaOndulado,
-                                              contadorEsquinaColSobreSalida,
-                                              contadorEsquinaTapaMalformada,
-                                              contadorHiloSueltoReata,
-                                              contadorHiloSueltoRemate,
-                                              contadorHiloSueltoAlcochado,
-                                              contadorHiloSueltoInterior,
-                                              contadorPuntaSaltadaReata,
-                                              contadorReataRasgadaEnganchada,
-                                              contadorTipoRemateInadecuado,
-                                              contadorTelaEspumaSalidaReata,
-                                              contadorTapaDescuadrada,
-                                              contadorTelaRasgada,
-                                              contadorNinguno,
-                                              contadorOtros,
-                                              contadorPresenciaHiloSuelto);
+                                              charts);
                                         }
                                         Navigator.of(context)
                                             .pop(); // Cerrar el cuadro de diálogo
@@ -1162,7 +1349,20 @@ class _SendEmailViewState extends State<SendEmailView> {
                               ),
                           icon: Icon(Icons.picture_as_pdf, color: Colors.red),
                           label: Text(
-                            'Generar',
+                            'Generar PDF',
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: () async {
+                            await generateAndDownloadXLSX(
+                                colchones, selectedFiltro);
+                          },
+                          style: OutlinedButton.styleFrom(),
+                          icon: Icon(Icons.file_copy_rounded,
+                              color: Colors.green),
+                          label: Text(
+                            'Generar XLSX',
                             style: TextStyle(color: Colors.black),
                           ),
                         ),
@@ -1202,7 +1402,6 @@ class _SendEmailViewState extends State<SendEmailView> {
                                 }).toList(),
                                 onChanged: (value) {
                                   setState(() {
-                                    print('cambio el filtro');
                                     filtro = "";
                                     _fechaController.text = "";
                                     _fechaController2.text = "";
@@ -1414,13 +1613,14 @@ class _SendEmailViewState extends State<SendEmailView> {
                   body: Center(
                     child: Container(
                       child: SfCartesianChart(
-                          key: _barChartKey1,
-                          primaryXAxis: CategoryAxis(
-                            edgeLabelPlacement: EdgeLabelPlacement.shift,
-                            labelRotation: 300,
-                          ),
-                          primaryYAxis: NumericAxis(),
-                          series: series),
+                        key: _barChartKey1,
+                        primaryXAxis: CategoryAxis(
+                          edgeLabelPlacement: EdgeLabelPlacement.shift,
+                          labelRotation: 300,
+                        ),
+                        primaryYAxis: NumericAxis(),
+                        series: series,
+                      ),
                     ),
                   ),
                 ),

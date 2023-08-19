@@ -70,27 +70,27 @@ class _ColchonModalState extends State<ColchonModal> {
     // Verificar si hay valores definidos en el widget inicial
     if (widget.colchon != null) {
       final colchon = widget.colchon!;
-      bordeTapaOndulado = colchon.bordeTapaOndulado ?? true;
-      esquinaColSobresalida = colchon.esquinaColSobresalida ?? true;
-      esquinaTapaMalformada = colchon.esquinaTapaMalformada ?? true;
-      hiloSueltoReata = colchon.hiloSueltoReata ?? true;
-      hiloSueltoRemate = colchon.hiloSueltoRemate ?? true;
-      hiloSueltoAlcochado = colchon.hiloSueltoAlcochado ?? true;
-      hiloSueltoInterior = colchon.hiloSueltoInterior ?? true;
-      puntaSaltadaReata = colchon.puntaSaltadaReata ?? true;
-      reataRasgadaEnganchada = colchon.reataRasgadaEnganchada ?? true;
-      tipoRemateInadecuado = colchon.tipoRemateInadecuado ?? true;
-      telaEspumaSalidaReata = colchon.telaEspumaSalidaReata ?? true;
-      tapaDescuadrada = colchon.tapaDescuadrada ?? true;
-      telaRasgada = colchon.telaRasgada ?? true;
-      ninguno = colchon.ninguno ?? true;
-      otros = colchon.otros ?? true;
-      medida = colchon.medidas ?? "80x190";
-      selectedmedidas = colchon.medidas ?? "80x190";
-      intTotal = colchon.intTotal ?? 0;
-      presenciaHiloSuelto = colchon.presenciaHiloSuelto ?? true;
-      planAccion = colchon.planAccion ?? "";
-      observacion = colchon.observacion ?? "";
+      bordeTapaOndulado = colchon.bordeTapaOndulado;
+      esquinaColSobresalida = colchon.esquinaColSobresalida;
+      esquinaTapaMalformada = colchon.esquinaTapaMalformada;
+      hiloSueltoReata = colchon.hiloSueltoReata;
+      hiloSueltoRemate = colchon.hiloSueltoRemate;
+      hiloSueltoAlcochado = colchon.hiloSueltoAlcochado;
+      hiloSueltoInterior = colchon.hiloSueltoInterior;
+      puntaSaltadaReata = colchon.puntaSaltadaReata;
+      reataRasgadaEnganchada = colchon.reataRasgadaEnganchada;
+      tipoRemateInadecuado = colchon.tipoRemateInadecuado;
+      telaEspumaSalidaReata = colchon.telaEspumaSalidaReata;
+      tapaDescuadrada = colchon.tapaDescuadrada;
+      telaRasgada = colchon.telaRasgada;
+      ninguno = colchon.ninguno;
+      otros = colchon.otros;
+      medida = colchon.medidas;
+      selectedmedidas = colchon.medidas;
+      intTotal = colchon.intTotal;
+      presenciaHiloSuelto = colchon.presenciaHiloSuelto;
+      planAccion = colchon.planAccion;
+      observacion = colchon.observacion;
     }
   }
 

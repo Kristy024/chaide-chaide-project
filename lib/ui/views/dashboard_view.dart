@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:admin_dashboard/ui/labels/custom_labels.dart';
 import 'package:admin_dashboard/ui/cards/white_card.dart';
 
 import '../../providers/categories_provider.dart';
@@ -15,12 +14,14 @@ class ChartData {
 
   ChartData(this.loteCodigo, this.porcentajeFallas);
 }
+
 class TipoColchonData {
   final String tipo;
   final int cantidad;
 
   TipoColchonData(this.tipo, this.cantidad);
 }
+
 class DashboardView extends StatefulWidget {
   @override
   State<DashboardView> createState() => _DashboardViewState();
@@ -34,7 +35,7 @@ class _DashboardViewState extends State<DashboardView> {
     Provider.of<CategoriesProvider>(context, listen: false).getLotes();
     Provider.of<ColchonesProvider>(context, listen: false).getColchones();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final lotes = Provider.of<CategoriesProvider>(context).lotes;
@@ -101,46 +102,6 @@ class _DashboardViewState extends State<DashboardView> {
         contadorOtros +
         contadorPresenciaHiloSuelto;
 
- List<TipoColchonData> data = [
-      TipoColchonData('Borde Tapa Ondulado', contadorBordeTapaOndulado),
-      TipoColchonData('Esquina Col Sobresalida', contadorEsquinaColSobreSalida),
-      TipoColchonData('Esquina Tapa Malformada', contadorEsquinaTapaMalformada),
-      TipoColchonData('Hilo Suelto Reata', contadorHiloSueltoReata),
-      TipoColchonData('Hilo Suelto Remate', contadorHiloSueltoRemate),
-      TipoColchonData('Hilo Suelto Alcochado', contadorHiloSueltoAlcochado),
-      TipoColchonData('Hilo Suelto Interior', contadorHiloSueltoInterior),
-      TipoColchonData('Punta Saltada Reata', contadorPuntaSaltadaReata),
-      TipoColchonData('Reata Rasgada Enganchada', contadorReataRasgadaEnganchada),
-      TipoColchonData('Tipo Remate Inadecuado', contadorTipoRemateInadecuado),
-      TipoColchonData('Tela Espuma Salida Reata', contadorTelaEspumaSalidaReata),
-      TipoColchonData('Tapa Descuadrada', contadorTapaDescuadrada),
-      TipoColchonData('Tela Rasgada', contadorTelaRasgada),
-      TipoColchonData('Ninguno', contadorNinguno),
-      TipoColchonData('Otros', contadorOtros),
-      TipoColchonData('Presencia Hilo Suelto', contadorPresenciaHiloSuelto),
-    ];
-  //   final series = [
-  //     charts.Series<TipoColchonData, String>(
-  //       id: 'Cantidad',
-  //       domainFn: (TipoColchonData data, _) => data.tipo,
-  //       measureFn: (TipoColchonData data, _) => data.cantidad,
-  //       data: data,
-  //     ),
-  //   ];
-  //  final barChart = charts.BarChart(
-  //     series,
-  //     animate: true,
-  //     vertical: true,
-  //     defaultRenderer: charts.BarRendererConfig(
-  //       barRendererDecorator: charts.BarLabelDecorator<String>(
-  //         labelPosition: charts.BarLabelPosition.inside,
-
-  //       ),
-  //     ),
-  //     domainAxis: charts.OrdinalAxisSpec(
-  //       renderSpec: charts.NoneRenderSpec(),
-  //     ),
-  //   );
     for (var colchon in colchones) {
       String codigoLote = colchon.lote.codigo;
 
@@ -160,9 +121,7 @@ class _DashboardViewState extends State<DashboardView> {
       }
     }
 
-
-
-    for (var entry in porcentajeFallasPorLote.entries) {
+    /* for (var entry in porcentajeFallasPorLote.entries) {
       String codigoLote = entry.key;
       double porcentajeFallas = entry.value;
 
@@ -176,7 +135,7 @@ class _DashboardViewState extends State<DashboardView> {
       //         '${data.loteCodigo}: ${data.porcentajeFallas.toStringAsFixed(2)}%',
       //   ),
       // );
-    }
+    } */
     for (var lote in lotes) {
       if (lote.estadoRevision == true) {
         cantidadRevisados++;
@@ -205,8 +164,7 @@ class _DashboardViewState extends State<DashboardView> {
             children: [
               WhiteCard(
                 width: 500,
-                title:
-                    "Cantidad de Lotes \nRegistrados: $cantidadLotes ",
+                title: "Cantidad de Lotes \nRegistrados: $cantidadLotes ",
                 child: Column(
                   children: [
                     WhiteCard(
@@ -227,42 +185,37 @@ class _DashboardViewState extends State<DashboardView> {
                             }).toList(),
                           ),
                         )),
-                        
                   ],
                 ),
               ),
-             
-       
-                        
             ],
-            
           ),
           WhiteCard(
-                title: 'Porcentaje de Fallas por Lote',
-                child: Container(
-                  height: 300,
-                  // child: charts.BarChart(
-                  //   seriesList,
-                  //   animate: true,
-                  //   vertical: true,
-                  //   barRendererDecorator: charts.BarLabelDecorator<String>(),
-                  // ),
-                ),
-              ),
-              
-            Padding(
-              padding: const EdgeInsets.only(right: 50,left: 50),
-              child: WhiteCard(
-                  width: 300,
-                  title: 'Colchones',
-                  child: DataTable(
-                    columnSpacing: 100,
-                    columns: [
-                      DataColumn(label: Text('Etiqueta de fila')),
-                      DataColumn(label: Text('Cuenta')),
-                    ],
-                    rows: [
-                          DataRow(
+            title: 'Porcentaje de Fallas por Lote',
+            child: Container(
+              height: 300,
+              // child: charts.BarChart(
+              //   seriesList,
+              //   animate: true,
+              //   vertical: true,
+              //   barRendererDecorator: charts.BarLabelDecorator<String>(),
+              // ),
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.only(right: 50, left: 50),
+            child: WhiteCard(
+              width: 300,
+              title: 'Colchones',
+              child: DataTable(
+                columnSpacing: 100,
+                columns: [
+                  DataColumn(label: Text('Etiqueta de fila')),
+                  DataColumn(label: Text('Cuenta')),
+                ],
+                rows: [
+                  DataRow(
                     cells: [
                       DataCell(Text('Borde Tapa Ondulado')),
                       DataCell(Text(contadorBordeTapaOndulado.toString())),
@@ -364,21 +317,20 @@ class _DashboardViewState extends State<DashboardView> {
                       DataCell(Text(totalGeneral.toString())),
                     ],
                   ),
-                      // Agregar las demás etiquetas de fila aquí...
-                    ],
-                  ),
-                ),
-                
+                  // Agregar las demás etiquetas de fila aquí...
+                ],
+              ),
             ),
-              
-               Card(
+          ),
+
+          Card(
             child: Container(
               height: 400, // Ajusta la altura según tus necesidades
               // padding: EdgeInsets.all(20),
               // child: barChart,
             ),
           ),
-               //termina lote
+          //termina lote
         ],
       ),
     );

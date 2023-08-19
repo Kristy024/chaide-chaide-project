@@ -1,19 +1,12 @@
 import 'package:admin_dashboard/datatables/colchones_datasource.dart';
 import 'package:admin_dashboard/providers/colchones_provider.dart';
-import 'package:admin_dashboard/providers/users_provider.dart';
 import 'package:admin_dashboard/ui/modals/colchones_modal.dart';
 import 'package:flutter/material.dart';
 
-import 'package:admin_dashboard/datatables/users_datasource.dart';
-
-import 'package:admin_dashboard/ui/labels/custom_labels.dart';
 import 'package:provider/provider.dart';
 
-import '../../providers/categories_provider.dart';
-import '../../services/navigation_service.dart';
 import '../buttons/custom_icon_button.dart';
 import '../inputs/custom_inputs.dart';
-import '../modals/lotes_modal.dart';
 
 class BlankView extends StatefulWidget {
   @override
